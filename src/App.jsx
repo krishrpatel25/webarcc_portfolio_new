@@ -4,9 +4,15 @@ import profilePic from "./assets/profilePic2.png";
 import cwpHero from "./assets/cpw-hero.png";
 import ecommerceHero from "./assets/xstore-ecommerce.png";
 import paypathHero from "./assets/paypath.png";
-
+import MapCanvas from "./components/MapCanvas";
+import ProjectAccordion from "./components/ProjectAccordion";
+import { projectsData } from "./data/projectsData";
 export default function App() {
+  const [activeHeroProject, setActiveHeroProject] = useState(projectsData[0]);
+  const [activeLang, setActiveLang] = useState("EN");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const [openFaqId, setOpenFaqId] = useState(null);
   const steps = [
     {
       id: "01",
@@ -75,120 +81,38 @@ export default function App() {
     },
   ];
   useEffect(() => {
-    const lens = document.getElementById("lens");
     const progress = document.getElementById("progress");
-
-    if (!lens) return;
-
-    let mouseX = 0;
-    let mouseY = 0;
-
-    let currentX = 0;
-    let currentY = 0;
-
-    // 🎚️ Smoothness (lower = more delay)
-    const speed = 0.12;
-
-    // ⬇️ Offset values (THIS moves lens below cursor)
-    const offsetX = 30; // keep centered horizontally
-    const offsetY = 30; // move lens BELOW cursor
-
-    const move = (e) => {
-      mouseX = e.clientX + offsetX;
-      mouseY = e.clientY + offsetY;
-    };
-
     const scroll = () => {
       if (!progress) return;
       const h = document.documentElement;
       progress.style.width =
         (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
     };
-
-    const animate = () => {
-      currentX += (mouseX - currentX) * speed;
-      currentY += (mouseY - currentY) * speed;
-
-      lens.style.left = currentX + "px";
-      lens.style.top = currentY + "px";
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    document.addEventListener("mousemove", move);
     window.addEventListener("scroll", scroll);
-
     return () => {
-      document.removeEventListener("mousemove", move);
       window.removeEventListener("scroll", scroll);
     };
   }, []);
-
-  useEffect(() => {
-    const lens = document.getElementById("lens");
-    if (!lens) return;
-
-    const hoverTargets = document.querySelectorAll(
-      "nav a, nav button, .project-card",
-    );
-
-    const expand = () => lens.classList.add("lens-expand");
-    const shrink = () => lens.classList.remove("lens-expand");
-
-    hoverTargets.forEach((el) => {
-      el.addEventListener("mouseenter", expand);
-      el.addEventListener("mouseleave", shrink);
-    });
-
-    return () => {
-      hoverTargets.forEach((el) => {
-        el.removeEventListener("mouseenter", expand);
-        el.removeEventListener("mouseleave", shrink);
-      });
-    };
-  }, []);
-
-  const expandProject = () => {
-    lens.classList.add("lens-expand", "project-hover");
-  };
-
-  const shrink = () => {
-    lens.classList.remove("lens-expand", "project-hover");
-  };
-
-  document.querySelectorAll(".project-card").forEach((card) => {
-    card.addEventListener("mouseenter", expandProject);
-    card.addEventListener("mouseleave", shrink);
-  });
-
   return (
     <>
-      {/* Progress + Cursor */}
+      {/* Scroll Progress Indicator */}
       <div
         id="progress"
         className="fixed top-0 left-0 h-1 w-0 bg-[var(--accent)] z-[10000]"
       />
-      <div
-        id="lens"
-        className="hidden md:block fixed w-3 h-3 rounded-full bg-[var(--accent)]
-        pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2
-        shadow-[0_0_20px_var(--accent)]"
-      />
-
-      {/* ================= DESKTOP SIDEBAR ================= */}
-      <nav className="hidden md:flex fixed top-0 left-0 md:w-[70px] lg:w-[80px] bg-[#ffffff0c] backdrop-blur-lg border-r border-black/10 h-screen md:py-4 lg:py-8 flex-col items-center z-10">
-        <div className="flex items-center gap-3 mb-16">
-          <span className="w-[3px] h-10 bg-[var(--accent)]"></span>
-          <span className="italic font-black leading-tight">
-            WEB
-            <br />
-            AARC
-          </span>
+      {/* ================= TIERRA TOP NAVIGATION BAR ================= */}
+      <nav className="w-full grid grid-cols-12 items-stretch border-b border-black bg-[#F5F4F0] text-black sticky top-0 z-50">
+        {/* Left: Brand logo (web aarc.) */}
+        <div className="col-span-6 sm:col-span-4 lg:col-span-3 flex items-center px-6 py-4">
+          <a
+            href="#hero"
+            className="font-syne text-2xl font-bold tracking-tight text-black lowercase flex items-center gap-1.5"
+          >
+            web aarc<span className="text-neutral-400">.</span>
+          </a>
         </div>
-
-        <ul className="flex flex-col gap-16 my-auto">
+        {/* Middle: Navigation links with vertical dividers */}
+        <div className="hidden lg:flex col-span-6 items-stretch text-[11px] font-mono tracking-wider uppercase font-semibold border-l border-r border-black">
           {[
             { label: "INDEX", id: "help" },
             { label: "SERVICES", id: "services" },
@@ -196,87 +120,47 @@ export default function App() {
             { label: "PROCESS", id: "process" },
             { label: "INQUIRY", id: "contact" },
           ].map((item) => (
-            <li key={item.id}>
-              <a
-                href={`#${item.id}`}
-                className="
-          text-xs tracking-widest opacity-80 justify-center flex
-          hover:text-[var(--accent)]
-          [writing-mode:vertical-rl]
-          rotate-180
-        "
-              >
-                #{item.label}
-              </a>
-            </li>
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className="flex-1 flex items-center justify-center border-r border-black last:border-r-0 text-neutral-700 hover:text-black hover:bg-black/5 transition-colors"
+            >
+              {item.label}
+            </a>
           ))}
-        </ul>
-      </nav>
-
-      {/* ================= MOBILE TOP BAR ================= */}
-      <div
-        className="fixed top-0 left-0 w-full h-16 bg-[#d8d8d8]
-  border-b border-black/10 flex items-center justify-between px-4
-  z-[9999] md:hidden"
-      >
-        <div className="flex items-center gap-3">
-          <span className="w-[3px] h-10 bg-[var(--accent)]"></span>
-          <span className="italic font-black leading-tight">
-            WEB
-            <br />
-            AARC
-          </span>
         </div>
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="relative w-5 h-5 flex items-center justify-center z-[10001]"
-          aria-label="Toggle menu"
-        >
-          {/* top line */}
-          <span
-            className={`absolute h-[2px] w-5 bg-black transition-all duration-300
-    ${menuOpen ? "rotate-45" : "-translate-y-1.5"}`}
-          />
-
-          {/* middle line */}
-          <span
-            className={`absolute h-[2px] w-5 bg-black transition-all duration-300
-    ${menuOpen ? "opacity-0" : ""}`}
-          />
-
-          {/* bottom line */}
-          <span
-            className={`absolute h-[2px] w-5 bg-black transition-all duration-300
-    ${menuOpen ? "-rotate-45" : "translate-y-1.5"}`}
-          />
-        </button>
-      </div>
-
-      {/* ================= MOBILE SIDE MENU ================= */}
-      <div
-        className={`fixed top-0 right-0 h-screen w-[280px] bg-[var(--accent)]
-  pt-28 px-8 z-[9998] transform transition-transform duration-300
-  ${menuOpen ? "translate-x-0" : "translate-x-full"} md:hidden`}
-      >
-        {[
-          { label: "INDEX", id: "help" },
-          { label: "SERVICES", id: "services" },
-          { label: "WORK", id: "projects" },
-          { label: "PROCESS", id: "process" },
-          { label: "INQUIRY", id: "contact" },
-        ].map((item) => (
+        {/* Right: Language switch pill & Book Free Demo button */}
+        <div className="col-span-6 sm:col-span-8 lg:col-span-3 flex items-center justify-end space-x-3 px-6 py-4">
+          {/* Language Selector Pill */}
+          <div className="bg-neutral-200 p-1 rounded-full flex items-center text-[10px] font-mono font-bold">
+            <button
+              onClick={() => setActiveLang("ES")}
+              className={`px-2.5 py-0.5 rounded-full transition-all ${activeLang === "ES"
+                ? "bg-black text-white"
+                : "text-neutral-600 hover:text-black"
+                }`}
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setActiveLang("EN")}
+              className={`px-2.5 py-0.5 rounded-full transition-all ${activeLang === "EN"
+                ? "bg-black text-white"
+                : "text-neutral-600 hover:text-black"
+                }`}
+            >
+              EN
+            </button>
+          </div>
+          {/* Book Free Demo Pill Button */}
           <a
-            key={item.id}
-            href={`#${item.id}`}
-            onClick={() => setMenuOpen(false)}
-            className="block mb-8 tracking-widest text-white text-sm opacity-80
-      hover:text-[var(--accent)]"
+            href="#contact"
+            className="text-xs uppercase tracking-wider font-semibold border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all shadow-sm"
           >
-            {item.label}
+            Book Free Demo
           </a>
-        ))}
-      </div>
-
+        </div>
+      </nav>
       {/* Overlay */}
       {menuOpen && (
         <div
@@ -284,1348 +168,1218 @@ export default function App() {
           className="fixed inset-0 bg-black/40 z-9997 md:hidden"
         />
       )}
-
-      {/* ================= RIGHT PANEL ================= */}
-      <div
-        className="hidden md:flex fixed right-8 top-1/2 -translate-y-1/2
-        h-[90%] flex-col justify-between items-center z-40"
-      >
-        <div className="flex flex-col gap-4">
-          <i className="ri-instagram-line text-xl" />
-          <i className="ri-whatsapp-line text-xl" />
-        </div>
-
-        <div className="flex flex-col gap-[3px]">
-          <span className="w-6 h-[2px] bg-black opacity-70"></span>
-          <span className="w-6 h-[5px] bg-black"></span>
-          <span className="w-6 h-[3px] bg-black opacity-80"></span>
-          <span className="w-6 h-[7px] bg-black"></span>
-          <span className="w-6 h-[2px] bg-black opacity-60"></span>
-          <span className="w-6 h-[6px] bg-black"></span>
-          <span className="w-6 h-[4px] bg-black opacity-80"></span>
-          <span className="w-6 h-[8px] bg-black"></span>
-          <span className="w-6 h-[3px] bg-black opacity-70"></span>
-          <span className="w-6 h-[5px] bg-black"></span>
-          <span className="w-6 h-[2px] bg-black opacity-60"></span>
-        </div>
-      </div>
-
       {/* ================= MAIN ================= */}
-      <main className="pt-20 md:pt-0">
-        {/* hero section */}
-        <section className="container relative min-h-dvh flex flex-col justify-center py-12 md:py-20 overflow-hidden bg-white text-black">
-          {/* 1. THE ARCHITECTURAL GRID (Hidden/Softened on Mobile) */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute left-[5%] md:left-[8%] top-0 w-[1px] h-full bg-black/[0.03]" />
-            <div className="absolute right-[5%] md:right-[8%] top-0 w-[1px] h-full bg-black/[0.03]" />
-            {/* Horizontal line follows the header flow on mobile */}
-            <div className="absolute top-[15%] md:top-[20%] left-0 w-full h-[1px] bg-black/[0.03]" />
-          </div>
-
-          <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-16 lg:gap-12 items-center">
-            {/* 2. BOLD TYPOGRAPHY SECTION */}
-            <div className="px-[5%] md:px-0 lg:pl-[8%] pt-10 lg:pt-0">
-              <div className="flex items-center gap-4 mb-4 md:mb-6 font-mono text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] text-black/40">
-                <div className="w-6 md:w-90 h-[1px] bg-[var(--accent)]" />
-              </div>
-
-              <h1 className="font-black leading-[0.85] md:leading-[0.8] text-[clamp(1.5rem,11vw,8.5rem)] tracking-tighter uppercase">
-                Websites
-                <br />
-                <span className="flex flex-wrap items-baseline gap-x-4">
-                  <span
-                    className="text-transparent"
-                    style={{ WebkitTextStroke: "1px black" }}
-                  >
-                    That Help
-                  </span>
-                  <span className="text-[var(--accent)]">Businesses Grow</span>
-                </span>
-              </h1>
-
-              <p className="mt-8 md:mt-12 max-w-[420px] text-lg md:text-xl font-light leading-tight opacity-70">
-                I design and develop fast, reliable websites that help
-                businesses look professional
-                <span className="font-bold"> grow online.</span>
-              </p>
-            </div>
-
-            {/* 3. THE IMAGE PORTAL (Responsive Scaling) */}
-            <div className="relative flex justify-center lg:justify-end px-[5%] md:pr-[8%]">
-              <div className="relative w-full max-w-[280px] aspect-[4/5] md:max-w-none md:w-80 md:h-96 group">
-                {/* Decorative Frames (Scaled down for mobile) */}
-                <div className="absolute -inset-2 md:-inset-4 border border-black/5 rotate-3 group-hover:rotate-0 transition-transform duration-700" />
-                <div className="absolute -inset-4 md:-inset-8 border border-black/[0.03] -rotate-6 group-hover:rotate-0 transition-transform duration-1000" />
-
-                {/* Image Container with Corner Cut */}
-                <div
-                  className="relative w-full h-full overflow-hidden bg-gray-100 shadow-2xl transition-all duration-500 md:group-hover:translate-x-4 md:group-hover:-translate-y-4"
-                  style={{
-                    clipPath:
-                      "polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%)",
-                  }}
-                >
-                  <img
-                    src={profilePic}
-                    alt="Krish Patel"
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80" />
-
-                  <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 text-white">
-                    <p className="font-mono text-[8px] md:text-[10px] uppercase tracking-widest opacity-60">
-                      Developer
-                    </p>
-                    <h3 className="font-black text-xl md:text-2xl uppercase tracking-tighter">
-                      Krish Patel
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Decorative Button with Code Icon */}
-                <button className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 bg-[var(--accent)] text-white p-3 md:p-4 rounded-full shadow-xl hover:scale-110 transition-transform flex items-center justify-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]"
-                  >
-                    {/* Right Bracket: > */}
-                    <polyline points="16 18 22 12 16 6" />
-                    {/* Left Bracket: < */}
-                    <polyline points="8 6 2 12 8 18" />
-                    {/* Slash: / */}
-                    <line x1="14" y1="4" x2="10" y2="20" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-        <div className="py-16">
-          {/* MOBILE */}
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 30H50L80 10H200L230 30H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M50 30L80 10H200L230 30"
-                stroke="var(--accent)"
-                strokeWidth="2.5"
-                strokeDasharray="250"
-                strokeDashoffset="250"
-              />
-            </svg>
-          </div>
-          {/* DESKTOP */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 45H100L140 15H450L490 45H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M100 45L140 15H450L490 45"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="500"
-                strokeDashoffset="500"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* Help Your Business */}
+      <main className="pt-20 md:pt-0 bg-[#F5F4F0] min-h-screen px-4 md:px-6 lg:px-8">
+        <div className="border-l border-r border-black bg-[#F5F4F0]">
+        {/* ================= TIERRA EDITORIAL HERO SECTION ================= */}
         <section
-          id="help"
-          className="container font-['Space_Grotesk',_sans-serif]"
+          id="hero"
+          className="w-full border-b border-black bg-[#F5F4F0] text-black"
         >
-          <div>
-            {/* ===== HEADING ===== */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-12">
-              <div className="relative">
-                <h1
-                  className="text-[2.2rem] sm:text-4xl md:text-6xl
-          font-[900] tracking-tighter uppercase
-          leading-[0.9] md:leading-[0.85] text-black"
-                >
-                  How We Help <br />
-                  <span className="opacity-20">Your Business</span>
-                </h1>
-              </div>
-
-              <p
-                className="max-w-full md:max-w-[280px]
-        text-[10px] sm:text-xs font-bold
-        text-gray-400 uppercase tracking-widest
-        leading-relaxed border-l-2 border-[var(--accent)]
-        pl-4"
-              >
-                Simple, high-performance websites built to turn your visitors
-                into customers.
+          {/* Header grid title */}
+          <div className="w-full border-b border-black grid grid-cols-12 items-stretch bg-[#F5F4F0]">
+            <div className="col-span-12 md:col-span-7 lg:col-span-6 px-6 py-6 md:py-10 border-r border-black flex flex-col justify-center">
+              <h1 className="font-syne text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-black uppercase leading-none">
+                WEBSITES THAT HELP BUSINESSES GROW.
+              </h1>
+            </div>
+            <div className="col-span-12 md:col-span-5 lg:col-span-4 px-6 py-6 md:py-10 border-r border-black flex items-center">
+              <p className="text-xs sm:text-sm leading-relaxed text-neutral-700 font-outfit">
+                I design and develop fast, reliable websites that help
+                businesses look professional & grow online.
               </p>
             </div>
-
-            {/* ===== MISSION CARD ===== */}
-            <div
-              className="relative overflow-hidden bg-white
-      border border-black/5 
-      p-6 sm:p-8 md:p-14 lg:p-20
-      shadow-sm"
-            >
-              {/* Corner Decoration */}
-              <div
-                className="absolute top-0 left-0 w-12 h-12 sm:w-16 sm:h-16
-      border-t-4 border-l-4 border-[var(--accent)]/10 "
-              />
-
-              <div className="relative z-10">
-                <h2
-                  className="text-[1.6rem] sm:text-2xl md:text-3xl lg:text-5xl
-          font-[800] tracking-tight text-black
-          leading-tight md:leading-[1.1]
-          max-w-full md:max-w-4xl lg:max-w-5xl"
-                >
-                  I help small and local businesses{" "}
-                  <span className="text-[var(--accent)]">grow online</span> with
-                  clean, easy-to-use websites that turn{" "}
-                  <span className="italic font-medium border-b-4 border-[var(--accent)]/20 px-1">
-                    visitors into customers.
-                  </span>
-                </h2>
-
-                <p
-                  className="text-gray-500 text-base sm:text-lg md:text-2xl
-          max-w-full md:max-w-xl lg:max-w-2xl
-          mt-6 md:mt-8 leading-relaxed font-medium"
-                >
-                  No complex systems. No technical confusion. Just
-                  high-performance digital tools that work for your business
-                  growth.
-                </p>
-
-                {/* ===== BADGES ===== */}
-                <div
-                  className="mt-10 sm:mt-12 md:mt-16 pt-6 sm:pt-8 md:pt-10
-          border-t border-black/5
-          flex flex-wrap gap-y-4 gap-x-6 sm:gap-x-8 md:gap-x-12 items-center"
-                >
-                  {["Free Demo", "Local Focus", "Quick Delivery"].map(
-                    (label, i) => (
-                      <div key={i} className="flex items-center gap-3 group">
-                        <span className="text-[10px] font-black text-[var(--accent)] opacity-40">
-                          0{i + 1}
-                        </span>
-                        <span
-                          className="text-[10px] sm:text-[11px]
-                font-[800] uppercase tracking-[0.2em]
-                text-black/60 group-hover:text-black
-                transition-colors cursor-default"
-                        >
-                          {label}
-                        </span>
-                      </div>
-                    ),
-                  )}
-                </div>
-              </div>
-
-              {/* ===== WATERMARK ===== */}
-              <span
-                className="absolute -bottom-6 -right-6
-        sm:-bottom-10 sm:-right-10
-        text-[80px] sm:text-[120px] md:text-[200px]
-        font-black opacity-[0.03]
-        pointer-events-none select-none tracking-tighter"
-              >
-                LOCAL
+            <div className="col-span-12 lg:col-span-2 px-6 py-6 md:py-10 flex items-center justify-center space-x-4">
+              <span className="font-syne text-5xl lg:text-6xl font-light text-black tracking-tighter">
+                20
+              </span>
+              <span className="font-syne text-5xl lg:text-6xl font-light text-black tracking-tighter">
+                26
               </span>
             </div>
           </div>
-        </section>
-        <div className="py-16">
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 10H150L250 30H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M150 10L250 30"
-                stroke="var(--accent)"
-                strokeWidth="2.5"
-                strokeDasharray="120"
-                strokeDashoffset="120"
-              />
-            </svg>
-          </div>
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 15H400L600 45H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M400 15L600 45"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="250"
-                strokeDashoffset="250"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* our services  */}
-        <section id="services" className="container">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-12">
-            <div className="relative">
-              <h1
-                className="text-[2.2rem] sm:text-4xl md:text-6xl
-          font-[900] tracking-tighter uppercase
-          leading-[0.9] md:leading-[0.85] text-black"
-              >
-                Our <br />
-                <span className="opacity-20">Services</span>
-              </h1>
-            </div>
-
-            <p
-              className="max-w-full md:max-w-[280px]
-        text-[10px] sm:text-xs font-bold
-        text-gray-400 uppercase tracking-widest
-        leading-relaxed border-l-2 border-[var(--accent)]
-        pl-4"
-            >
-              We design and build fast, modern, and user-friendly websites that
-              help your business grow online.
-            </p>
-          </div>
-
-          {/* ===== SERVICES GRID ===== */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 
-  gap-px border border-black/10 mb-5"
-          >
-            {/* Card 1 */}
-            <div
-              className="bg-[var(--card-bg)] p-6 sm:p-8 md:p-9 font-bold
-      border-b border-black/10 
-      lg:border-b-0 lg:border-r transition"
-            >
-              <h3 className="text-lg sm:text-xl uppercase text-[var(--accent)] mb-4 md:mb-5">
-                01 / Landing Pages
-              </h3>
-              <p className="text-sm opacity-90">
-                One-page websites designed to get quick calls, WhatsApp
-                inquiries, and customer leads.
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div
-              className="bg-[var(--card-bg)] p-6 sm:p-8 md:p-9 font-bold
-      border-b border-black/10 
-      lg:border-b-0 lg:border-r transition"
-            >
-              <h3 className="text-lg sm:text-xl uppercase text-[var(--accent)] mb-4 md:mb-5">
-                02 / Business Websites
-              </h3>
-              <p className="text-sm opacity-90">
-                Simple multi-page websites that build trust and make your
-                business look professional online.
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div
-              className="bg-[var(--card-bg)] p-6 sm:p-8 md:p-9 font-bold
-      border-b border-black/10 
-      lg:border-b-0 lg:border-r transition"
-            >
-              <h3 className="text-lg sm:text-xl uppercase text-[var(--accent)] mb-4 md:mb-5">
-                03 / Redesign
-              </h3>
-              <p className="text-sm opacity-90">
-                Upgrade your existing website to improve design, speed, and
-                mobile experience.
-              </p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="bg-[var(--accent)] p-6 sm:p-8 md:p-9 font-bold flex flex-col gap-4">
+          {/* 2-Column Equal 50-50 Width Tierra Showcase */}
+          <div className="w-full grid grid-cols-12 items-stretch min-h-[540px] bg-[#F5F4F0]">
+            {/* Left Column (50% Width): Intro card & profile info */}
+            <div className="col-span-12 lg:col-span-6 border-b lg:border-b-0 lg:border-r border-black flex flex-col justify-between p-8 lg:p-12 bg-[#F5F4F0]">
               <div>
-                <h3 className="text-lg sm:text-xl uppercase text-white mb-4 md:mb-5">
-                  04 / Consultation
-                </h3>
-                <p className="text-white/80 text-sm">
-                  Honest advice on what type of website your business actually
-                  needs.
+
+                <p className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold text-black leading-tight">
+                  Krish Patel Web Developer
+                </p>
+                <p className="text-xs sm:text-sm text-neutral-600 font-mono mt-2">
+                  Based in Ahmedabad, IN. Available Worldwide.
                 </p>
               </div>
-              <a
-                href="https://wa.me/9726632563?text=Hi%20I%20want%20to%20discuss%20a%20website%20project"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative overflow-hidden bg-white text-black px-12 py-6 uppercase font-black tracking-widest text-xs hover:text-white hover:bg-green-500 transition-all shadow-2xl"
-              >
-                Talk on WhatsApp →
-              </a>
+              <div className="mt-8 pt-6 border-t border-neutral-300">
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-1">
+                  STATUS
+                </span>
+                <p className="text-xs font-mono font-bold text-black uppercase">
+                  AVAILABLE FOR NEW FREELANCE & INCUBATION PROJECTS
+                </p>
+                <p className="text-xs font-mono text-neutral-500 mt-2 uppercase tracking-wider">
+                  DEVELOPER @ WEB AARC LABS
+                </p>
+              </div>
+            </div>
+            {/* Right Column (50% Width): Tierra Map Canvas */}
+            <div className="col-span-12 lg:col-span-6 relative min-h-[480px]">
+              <MapCanvas
+                activeProject={activeHeroProject}
+                projects={projectsData}
+                onSelectProject={(p) => setActiveHeroProject(p)}
+              />
             </div>
           </div>
         </section>
-        <div className="py-16">
-          {/* MOBILE */}
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 10H140L170 30H230L260 10H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M140 10L170 30H230L260 10"
-                stroke="var(--accent)"
-                strokeWidth="2.5"
-                strokeDasharray="200"
-                strokeDashoffset="200"
-              />
-            </svg>
-          </div>
-          {/* DESKTOP */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 15H420L450 45H550L580 15H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M420 15L450 45H550L580 15"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="400"
-                strokeDashoffset="400"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* recent projects  */}
+        {/* ================= ULTRA CLEAN 50-50 ABOUT SECTION (#about) ================= */}
         <section
-          id="projects"
-          className="container min-h-screen flex flex-col md:flex-row font-['Space_Grotesk',_sans-serif]"
+          id="about"
+          className="w-full border-b border-black bg-[#F5F4F0] text-black"
         >
-          {/* LEFT STICKY TITLE */}
-          <div className="w-full md:w-2/5 md:h-screen md:sticky md:top-0 flex items-center border-b md:border-b-0 md:border-r border-black/10 bg-[var(--card-bg)] py-10 md:py-0">
-            <div className="flex flex-col md:pr-4 gap-4 md:gap-6">
-              <h1 className="text-[2rem] sm:text-4xl md:text-6xl font-[900] tracking-tighter uppercase leading-[0.9] md:leading-[0.85] text-black">
-                Recent <br />
-                <span className="opacity-20">Work</span>
-              </h1>
-
-              <p className="max-w-full md:max-w-[280px] text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed border-l-2 border-[var(--accent)] pl-4">
-                A collection of projects created for clients, reflecting our
-                approach to professional design and development.
-              </p>
+          <div className="w-full grid grid-cols-12 items-stretch">
+            {/* Left 50% Column (Clean, top aligned) */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 border-b lg:border-b-0 lg:border-r border-black flex flex-col justify-start bg-[#F5F4F0]">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  02 / ABOUT ME
+                </span>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+                  BUILD WITH INTENTION.
+                </h2>
+              </div>
             </div>
-          </div>
-
-          {/* PROJECT LIST */}
-          <div className="w-full py-10 md:py-24 md:px-4 space-y-12 md:space-y-24">
-            {[
-              {
-                id: "01",
-                title: "Infotech Landing Page",
-                label: "INFOTECH_SAMPLE",
-                tag: "Technology",
-                liveUrl: "https://www.cipherwisp.com/",
-                image: cwpHero,
-              },
-              {
-                id: "02",
-                title: "Ecommerce Landing Page",
-                label: "ECOMMERCE_SAMPLE",
-                tag: "Ecommerce",
-                liveUrl:
-                  "https://krishrpatel25.github.io/XStore-Ecommerce-Project/",
-                image: ecommerceHero,
-              },
-              {
-                id: "03",
-                title: "Fintech Landing Page",
-                label: "FINTECH_SAMPLE",
-                tag: "FinTech",
-                liveUrl: "https://paypathweb.netlify.app/",
-                image: paypathHero,
-              },
-            ].map((project, idx) => (
-              <div
-                key={`${project.id}-${idx}`}
-                className="flex flex-col items-center text-center border border-black/10 p-6 md:p-12 space-y-6 md:space-y-8"
-              >
-                {/* TITLE */}
-                <div className="space-y-2">
-                  <span className="text-[var(--accent)] text-[10px] font-black tracking-[0.3em] uppercase">
-                    // Project_{project.id}
-                  </span>
-                  <h2 className="text-3xl font-[900] tracking-tighter uppercase leading-none">
-                    {project.title}
-                  </h2>
-                </div>
-
-                {/* IMAGE PREVIEW */}
+            {/* Right 50% Column */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 flex flex-col justify-between bg-[#F5F4F0]">
+              <div className="space-y-6">
+                <p className="text-xl sm:text-2xl font-syne font-bold uppercase text-black leading-snug">
+                  I'm Krish Patel, a full-stack developer focused on building
+                  performant, production-ready web applications. My work spans
+                  product development, client engagements, and independent
+                  ventures with an emphasis on clean architecture, scalability,
+                  and measurable outcomes.
+                </p>
+                <div className="w-12 h-[1px] bg-black"></div>
+                <p className="text-sm sm:text-base font-outfit text-neutral-700 leading-relaxed font-normal">
+                  I approach every project the same way: understand the problem
+                  deeply, build with intention, and ship something that actually
+                  performs.
+                </p>
+              </div>
+              <div className="pt-6 border-t border-neutral-300 mt-10 flex items-center justify-start">
                 <a
-                  href={project.liveUrl}
+                  href="/resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="project-card group w-full max-w-4xl aspect-[14.5/7] border border-black/10 overflow-hidden relative"
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-black font-syne font-bold uppercase tracking-wider text-xs text-black bg-[#F5F4F0] transition-colors duration-300 hover:bg-black/5"
                 >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover object-top"
-                  />
-
-                  {/* Overlay label */}
-                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="absolute bottom-4 right-4 text-[10px] font-black tracking-[0.3em] uppercase bg-white px-3 py-1">
-                    View Live ↗
-                  </span>
+                  <span>View Resume</span>
+                  <span className="text-sm"> </span>
                 </a>
-
-                {/* DESCRIPTION */}
-                <div className="space-y-4 flex flex-col items-center">
-                  <p className="text-gray-500 text-sm leading-relaxed max-w-md">
-                    Clean, high-performance digital solution tailored for local{" "}
-                    {project.tag.toLowerCase()} growth.
-                  </p>
-
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] font-[900] uppercase tracking-wider border-b-2 border-black hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all pb-1"
-                  >
-                    Live Demo ↗
-                  </a>
-
-                  <p className="opacity-50 text-[10px] font-black uppercase tracking-widest">
-                    {project.tag} // Sample Project
-                  </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* ================= TIERRA EDITORIAL TECH STACK SECTION (#tech-stack) ================= */}
+        <section
+          id="tech-stack"
+          className="w-full border-b border-black bg-[#F5F4F0] text-black"
+        >
+          {/* Top Header Grid Strip (Same UI as About Section Heading) */}
+          <div className="w-full border-b border-black px-8 py-16 lg:px-14 lg:py-24 bg-[#F5F4F0]">
+            <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+              03 / TECH STACK
+            </span>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+              WHAT I BUILD WITH.
+            </h2>
+          </div>
+          {/* 5 Cards in 1 Row (5 Columns), Shared 1px Black Border, Zero Gap */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 items-stretch bg-[#F5F4F0] border-b border-black">
+            {[
+              {
+                category: "01 / FRONTEND",
+                items: [
+                  { name: "HTML", icon: "https://skillicons.dev/icons?i=html" },
+                  { name: "CSS", icon: "https://skillicons.dev/icons?i=css" },
+                  {
+                    name: "JavaScript",
+                    icon: "https://skillicons.dev/icons?i=js",
+                  },
+                  {
+                    name: "TypeScript",
+                    icon: "https://skillicons.dev/icons?i=ts",
+                  },
+                  {
+                    name: "React",
+                    icon: "https://skillicons.dev/icons?i=react",
+                  },
+                  {
+                    name: "Next.js",
+                    icon: "https://skillicons.dev/icons?i=nextjs",
+                  },
+                  {
+                    name: "Tailwind CSS",
+                    icon: "https://skillicons.dev/icons?i=tailwind",
+                  },
+                  {
+                    name: "Framer Motion",
+                    icon: "https://cdn.simpleicons.org/framer",
+                  },
+                  {
+                    name: "GSAP",
+                    icon: "https://cdn.simpleicons.org/greensock",
+                  },
+                ],
+              },
+              {
+                category: "02 / BACKEND",
+                items: [
+                  {
+                    name: "Node.js",
+                    icon: "https://skillicons.dev/icons?i=nodejs",
+                  },
+                  {
+                    name: "Express.js",
+                    icon: "https://skillicons.dev/icons?i=express",
+                  },
+                  {
+                    name: "Python",
+                    icon: "https://skillicons.dev/icons?i=python",
+                  },
+                  {
+                    name: "MongoDB",
+                    icon: "https://skillicons.dev/icons?i=mongodb",
+                  },
+                  {
+                    name: "Firebase",
+                    icon: "https://skillicons.dev/icons?i=firebase",
+                  },
+                ],
+              },
+              {
+                category: "03 / HARDWARE / IOT",
+                items: [
+                  {
+                    name: "Arduino",
+                    icon: "https://skillicons.dev/icons?i=arduino",
+                  },
+                  {
+                    name: "ESP32",
+                    icon: "https://cdn.simpleicons.org/espressif",
+                  },
+                ],
+              },
+              {
+                category: "04 / DESIGN & UI-UX",
+                items: [
+                  {
+                    name: "Figma",
+                    icon: "https://skillicons.dev/icons?i=figma",
+                  },
+                  {
+                    name: "Adobe XD",
+                    icon: "https://skillicons.dev/icons?i=xd",
+                  },
+                  { name: "Wireframing", isTextBadge: true, label: "UI/WIRE" },
+                  { name: "Prototyping", isTextBadge: true, label: "UX/PROTO" },
+                ],
+              },
+              {
+                category: "05 / TOOLS & DEVOPS",
+                items: [
+                  { name: "Git", icon: "https://skillicons.dev/icons?i=git" },
+                  {
+                    name: "GitHub",
+                    icon: "https://skillicons.dev/icons?i=github",
+                  },
+                  {
+                    name: "Docker",
+                    icon: "https://skillicons.dev/icons?i=docker",
+                  },
+                  {
+                    name: "Postman",
+                    icon: "https://skillicons.dev/icons?i=postman",
+                  },
+                  {
+                    name: "Vercel",
+                    icon: "https://skillicons.dev/icons?i=vercel",
+                  },
+                ],
+              },
+            ].map((sec, idx) => (
+              <div
+                key={sec.category}
+                className={`flex flex-col justify-between p-6 bg-[#F5F4F0] border-b lg:border-b-0 border-black ${idx < 4 ? "lg:border-r" : ""
+                  }`}
+              >
+                <div>
+                  <div className="border-b border-black pb-3 mb-4 flex items-center justify-between">
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-black">
+                      {sec.category}
+                    </h3>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                      {sec.items.length}
+                    </span>
+                  </div>
+                  <div className="w-full border border-black divide-y divide-black">
+                    {sec.items.map((item) => (
+                      <div
+                        key={item.name}
+                        className="p-3 bg-white flex items-center space-x-3"
+                      >
+                        {item.isTextBadge ? (
+                          <div className="w-7 h-7 rounded-full border border-black flex items-center justify-center text-[8px] font-mono font-bold bg-[#F5F4F0] text-black shrink-0">
+                            {item.label}
+                          </div>
+                        ) : (
+                          <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                            <img
+                              src={item.icon}
+                              alt={item.name}
+                              className="max-w-full max-h-full object-contain"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-black truncate">
+                          {item.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        </section>
-
-        <div className="py-16">
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 20H150L170 10H230L250 30H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M150 20L170 10H230L250 30"
-                stroke="var(--accent)"
-                strokeWidth="2.5"
-                strokeDasharray="200"
-                strokeDashoffset="200"
-              />
-            </svg>
-          </div>
-
-          {/* DESKTOP: Height stays 60px for a more dramatic circuit jump.
-           */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 30H400L430 10H570L600 50H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M400 30L430 10H570L600 50"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="400"
-                strokeDashoffset="400"
-              />
-            </svg>
-          </div>
-
-          <style jsx>{`
-            @keyframes draw {
-              to {
-                stroke-dashoffset: 0;
-              }
-            }
-            .animate-draw {
-              animation: draw 3s ease-in-out infinite alternate;
-            }
-          `}</style>
-        </div>
-
-        {/* why choose us  */}
-        <section id="chooseUs" className=" container">
-          {/* ===== HEADING ===== */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-12">
-            <div className="relative">
-              <h1
-                className="text-[2.2rem] sm:text-4xl md:text-6xl
-          font-[900] tracking-tighter uppercase
-          leading-[0.9] md:leading-[0.85] text-black"
-              >
-                Why <br />
-                <span className="opacity-20">Choose US</span>
-              </h1>
-            </div>
-
-            <p
-              className="max-w-full md:max-w-[280px]
-        text-[10px] sm:text-xs font-bold
-        text-gray-400 uppercase tracking-widest
-        leading-relaxed border-l-2 border-[var(--accent)]
-        pl-4"
-            >
-              These are real client projects built to solve real business needs.
-              Each project reflects our focus on clean design, reliable
-              development, and practical results.
-            </p>
-          </div>
-          <div className="bg-[var(--card-bg)] border border-black/10 rounded mb-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 p-12 max-md:p-6">
-              <div className="flex gap-4">
-                <span className="w-[4px] bg-[var(--accent)]"></span>
-                <div>
-                  <h4 className="mb-2 uppercase text-lg font-bold">
-                    Fast Delivery
-                  </h4>
-                  <p className="text-xs opacity-50 leading-relaxed">
-                    Your website is usually ready within 24–48 hours, so your
-                    business can go online quickly.
-                  </p>
-                </div>
+          {/* Seamless Bottom Aspirational Strip: Interested In / Learning Next with Mesh Gradient */}
+          <div
+            className="w-full p-8 lg:p-12 relative overflow-hidden"
+            style={{
+              background:
+                "radial-gradient(at 15% 15%, #FFA3D7 0px, transparent 55%), radial-gradient(at 85% 15%, #8B9DFF 0px, transparent 55%), radial-gradient(at 50% 45%, #FF7626 0px, transparent 60%), radial-gradient(at 80% 85%, #FFE270 0px, transparent 50%), radial-gradient(at 15% 85%, #6A79FF 0px, transparent 55%), #FFA566",
+            }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-black">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-black/80 font-bold block mb-1">
+                  ASPIRATIONAL ROADMAP
+                </span>
+                <h4 className="font-syne text-xl sm:text-2xl font-extrabold uppercase text-black">
+                  INTERESTED IN / LEARNING NEXT
+                </h4>
               </div>
-
-              <div className="flex gap-4">
-                <span className="w-[4px] bg-[var(--accent)]"></span>
-                <div>
-                  <h4 className="mb-2 uppercase text-lg font-bold">
-                    Mobile Friendly
-                  </h4>
-                  <p className="text-xs opacity-50 leading-relaxed">
-                    Every website is designed to work smoothly on mobile phones,
-                    tablets, and desktops.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <span className="w-[4px] bg-[var(--accent)]"></span>
-                <div>
-                  <h4 className="mb-2 uppercase text-lg font-bold">
-                    Affordable
-                  </h4>
-                  <p className="text-xs opacity-50 leading-relaxed">
-                    Simple and fair pricing designed for small and local
-                    business owners.
-                  </p>
-                </div>
-              </div>
+              <span className="text-xs font-mono px-3.5 py-1.5 bg-black text-white font-bold uppercase self-start sm:self-auto border border-black shadow-sm">
+                Future Stack
+              </span>
             </div>
-          </div>
-        </section>
-        <div className="py-16">
-          {/* MOBILE */}
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 15H40L70 30H120L150 15H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M40 15L70 30H120L150 15"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="150"
-                strokeDashoffset="150"
-              />
-            </svg>
-          </div>
-          {/* DESKTOP */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 20H80L120 45H240L280 20H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M80 20L120 45H240L280 20"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="350"
-                strokeDashoffset="350"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* our process  */}
-        <section
-          id="process"
-          className="container bg-white font-['Space_Grotesk']"
-        >
-          {/* ===== HEADING ===== */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-12">
-            <div className="relative">
-              <h1 className="text-[2.2rem] sm:text-4xl md:text-6xl font-[900] tracking-tighter uppercase leading-[0.9] md:leading-[0.85] text-black">
-                Our <br />
-                <span className="opacity-20">Workflow</span>
-              </h1>
-            </div>
-
-            <p className="max-w-full md:max-w-[280px] text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed border-l-2 border-[var(--accent)] pl-4">
-              Our process is simple and transparent, designed to keep you
-              involved at every stage. From a free demo to final launch, each
-              step ensures clarity, quality, and a smooth project experience.
-            </p>
-          </div>
-
-          <div className="px-[6%]">
-            {/* STACKING CONTAINER */}
-            <div className="relative">
-              {steps.map((step, i) => (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {["LangChain", "RAG", "AI Agents", "TinyML"].map((tech) => (
                 <div
-                  key={step.id}
-                  className="sticky top-20 mb-20 group"
-                  style={{ top: `${80 + i * 20}px` }}
+                  key={tech}
+                  className="p-4 border border-black bg-white/95 flex items-center justify-center space-x-2 text-center shadow-sm"
                 >
-                  <div
-                    className={`
-              ${step.color}
-              border border-black/10 rounded-3xl
-              p-8 md:p-16 lg:p-20
-              shadow-[0_-20px_50px_rgba(0,0,0,0.05)]
-              transition-transform duration-500
-              group-hover:-translate-y-2
-              relative
-            `}
-                    style={
-                      step.id === "06" ? { background: "var(--accent)" } : {}
-                    }
-                  >
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-                      {/* Left Info */}
-                      <div className="space-y-6 md:w-2/3">
-                        <div className="flex items-center gap-4">
-                          <span
-                            className="px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest"
-                            style={{
-                              color:
-                                step.id === "06" ? "#fff" : "var(--accent)",
-                              borderColor:
-                                step.id === "06" ? "#fff" : "var(--accent)",
-                            }}
-                          >
-                            Phase_0{step.id}
-                          </span>
-
-                          <div
-                            className="h-[1px] w-12"
-                            style={{
-                              background:
-                                step.id === "06"
-                                  ? "rgba(255,255,255,0.3)"
-                                  : "rgba(0,0,0,0.1)",
-                            }}
-                          />
-                        </div>
-
-                        <h2 className="text-4xl md:text-7xl font-[900] tracking-tighter uppercase leading-none">
-                          {step.title}
-                        </h2>
-
-                        <p
-                          className="text-base md:text-xl font-medium leading-relaxed max-w-xl"
-                          style={{
-                            color:
-                              step.id === "06"
-                                ? "rgba(255,255,255,0.8)"
-                                : "#6b7280",
-                          }}
-                        >
-                          {step.desc}
-                        </p>
-                      </div>
-
-                      {/* Right Index */}
-                      <div className="text-7xl md:text-[6rem] font-black opacity-10 leading-none select-none">
-                        {step.id}
-                      </div>
-                    </div>
-
-                    {/* Corner Accent */}
-                    <div className="absolute bottom-8 right-12 text-xs font-black tracking-widest uppercase opacity-40">
-                      {step.id === "06" ? "Ready" : "In_Progress"}
-                    </div>
-                  </div>
+                  <span className="text-xs font-mono text-black font-bold">
+                    {" "}
+                  </span>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-black">
+                    {tech}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         </section>
-        <div className="py-16">
-          {/* MOBILE: Baseline 15, Jump on the right (approx 70% mark) */}
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 15H250L280 5H330L360 15H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              <path
-                className="animate-draw"
-                d="M250 15L280 5H330L360 15"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="150"
-                strokeDashoffset="150"
-              />
-            </svg>
-          </div>
-
-          {/* DESKTOP: Baseline 45, Jump on the right (approx 75% mark) */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 45H720L760 20H880L920 45H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              <path
-                className="animate-draw"
-                d="M720 45L760 20H880L920 45"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeDasharray="350"
-                strokeDashoffset="350"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* client reviews  */}
-        <section className="container font-['Space_Grotesk']">
-          {/* ===== HEADING ===== */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-12">
-            <div className="relative">
-              <h1 className="text-[2.2rem] sm:text-4xl md:text-6xl font-[900] tracking-tighter uppercase leading-[0.9] md:leading-[0.85] text-black">
-                What <br />
-                <span className="opacity-20">Clients Say</span>
-              </h1>
+        {/* ================= HOVER PREVIEW CLICK OPEN PROJECTS SECTION (#projects) ================= */}
+        <HoverPreviewClickOpenProjectsSection projects={projectsData} />
+        {/* ================= OUR SERVICES SECTION (#services) ================= */}
+        <section
+          id="services"
+          className="w-full border-b border-black bg-[#F5F4F0] text-black"
+        >
+          {/* Header same pattern as all other sections */}
+          <div className="w-full border-b border-black px-8 py-16 lg:px-14 lg:py-24 bg-[#F5F4F0] flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+            <div>
+              <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                05 / SERVICES
+              </span>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+                Our Services.
+              </h2>
             </div>
+          </div>
+          {/* 5 Cards in 1 Row same as tech stack layout */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 items-stretch">
+            {[
+              {
+                num: "01",
+                title: "Landing Pages",
+                desc: "One-page websites designed to get quick calls, WhatsApp inquiries, and customer leads.",
+                tag: "Lead Gen",
+              },
+              {
+                num: "02",
+                title: "Business Sites",
+                desc: "Multi-page websites that build trust and make your business look professional online.",
+                tag: "Branding",
+              },
+              {
+                num: "03",
+                title: "Redesign",
+                desc: "Upgrade your existing website to improve design, speed, and mobile experience.",
+                tag: "Revamp",
+              },
+              {
+                num: "04",
+                title: "Consultation",
+                desc: "Honest advice on what type of website your business actually needs.",
+                tag: "Strategy",
+              },
+            ].map((service, idx) => (
+              <div
+                key={service.num}
+                className={`flex flex-col justify-between p-6 lg:p-8 min-h-[300px] bg-[#F5F4F0] border-black border-b lg:border-b-0 ${idx < 3 ? "lg:border-r" : ""}`}
+              >
+                {/* Number */}
+                <div className="border-b border-black pb-3 mb-5 flex items-center justify-between">
+                  <span className="text-xs font-mono font-bold tracking-widest text-black">
+                    {service.num} /
+                  </span>
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-neutral-400">
+                    {service.tag}
+                  </span>
+                </div>
+                {/* Title + Desc */}
+                <div className="flex-1">
+                  <h3 className="font-syne text-lg sm:text-xl lg:text-2xl font-extrabold uppercase tracking-tight mb-3 leading-[0.95]">
+                    {service.title}
+                  </h3>
+                  <p className="text-xs font-outfit text-black/55 leading-relaxed font-medium">
+                    {service.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* 5th Card WhatsApp CTA with hero gradient */}
+            <a
+              href="https://wa.me/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col justify-between p-6 lg:p-8 min-h-[300px] bg-[radial-gradient(at_top_left,#FFA3C5_0%,transparent_55%),radial-gradient(at_bottom_left,#6C7CFF_0%,transparent_55%),radial-gradient(at_top_right,#7B8CFF_0%,transparent_55%),radial-gradient(at_bottom_right,#FFD56B_0%,transparent_55%),linear-gradient(to_bottom_right,#FFB295,#F8B06C)] border-black border-b lg:border-b-0 cursor-pointer"
+            >
+              <div className="border-b border-black/30 pb-3 mb-5 flex items-center justify-between">
+                <span className="text-xs font-mono font-bold tracking-widest text-black/50">
+                  05 /
+                </span>
+                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-black/40">
+                  CTA
+                </span>
+              </div>
 
-            <p className="max-w-full md:max-w-[280px] text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed border-l-2 border-[var(--accent)] pl-4">
-              Our clients’ words speak for the quality, reliability, and
-              professionalism we bring to every project.
-            </p>
+              <div className="mt-6">
+                <span className="inline-flex items-center space-x-2 px-6 py-3 border border-black bg-[#F5F4F0] text-xs font-mono font-bold uppercase tracking-wider text-black transition-colors duration-300 hover:bg-neutral-300">
+                  <span>Talk on WhatsApp</span>
+                  <span>&#x2197;</span>
+                </span>
+              </div>
+            </a>
+          </div>
+        </section>
+        {/* ================= HOW WE WORK PROCESS SECTION (#process) ================= */}
+        <section
+          id="process"
+          className="w-full border-b border-black bg-[#F5F4F0] text-black"
+        >
+          <div className="w-full grid grid-cols-12 items-stretch">
+            {/* LEFT Big heading, same as About Me */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 border-b lg:border-b-0 lg:border-r border-black flex flex-col justify-start bg-[#F5F4F0]">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  06 / PROCESS
+                </span>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+                  HOW WE WORK.
+                </h2>
+              </div>
+            </div>
+            {/* RIGHT 5 process steps */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 flex flex-col justify-between bg-[#F5F4F0]">
+              <div className="space-y-6">
+                {[
+                  {
+                    phase: "Phase_001",
+                    title: "STRATEGY",
+                    desc: "We understand your business goals and plan the right website approach.",
+                    status: "In_Progress",
+                  },
+                  {
+                    phase: "Phase_002",
+                    title: "FREE DEMO",
+                    desc: "I create a basic demo website using your business details.",
+                    status: "In_Progress",
+                  },
+                  {
+                    phase: "Phase_003",
+                    title: "ADVANCE",
+                    desc: "Once you like the demo, a small advance confirms the project.",
+                    status: "In_Progress",
+                  },
+                  {
+                    phase: "Phase_004",
+                    title: "PREVIEW",
+                    desc: "You receive a full preview link to review content and layout.",
+                    status: "In_Progress",
+                  },
+                  {
+                    phase: "Phase_005",
+                    title: "PAYMENT",
+                    desc: "After your approval, the remaining payment is completed.",
+                    status: "In_Progress",
+                  },
+                  {
+                    phase: "Phase_006",
+                    title: "LAUNCH",
+                    desc: "Your website is published and connected to your domain.",
+                    status: "Ready",
+                  },
+                ].map((step, idx, arr) => (
+                  <div key={step.title}>
+                    <h3 className="text-base sm:text-lg font-syne font-extrabold uppercase tracking-tight text-black mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm font-outfit text-neutral-600 leading-relaxed font-normal">
+                      {step.desc}
+                    </p>
+                    {idx < arr.length - 1 && (
+                      <div className="mt-6 w-full h-[1px] bg-black/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="pt-6 border-t border-neutral-300 mt-10 flex items-center justify-start">
+                <a
+                  href="https://wa.me/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-black font-syne font-bold uppercase tracking-wider text-xs text-black transition-all duration-300 hover:scale-105"
+                  style={{
+                    background: `
+ radial-gradient(at 15% 15%, #FFA3D7 0px, transparent 55%),
+ radial-gradient(at 85% 15%, #8B9DFF 0px, transparent 55%),
+ radial-gradient(at 50% 45%, #FF7626 0px, transparent 60%),
+ radial-gradient(at 80% 85%, #FFE270 0px, transparent 50%),
+ radial-gradient(at 15% 85%, #6A79FF 0px, transparent 55%),
+ #FFA566
+ `,
+                  }}
+                >
+                  <span>Talk on WhatsApp</span>
+                  <span className="text-sm"> </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TESTIMONIALS SECTION (#testimonials) ================= */}
+        {/* ================= TESTIMONIALS SECTION (#testimonials) ================= */}
+        <section id="testimonials" className="w-full border-b border-black bg-[#F5F4F0] text-black">
+          {/* Top Header Strip â€” Full Width (Original Layout) */}
+          <div className="w-full border-b border-black px-8 py-16 lg:px-14 lg:py-24 bg-[#F5F4F0]">
+            <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+              â€¢ 07 / TESTIMONIALS
+            </span>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+              WHAT CLIENTS SAY.
+            </h2>
           </div>
 
-          {/* ===== CONTENT ===== */}
-          <div>
-            {/* TOP LEVEL RATING */}
-            <div className="flex flex-col md:flex-row justify-between items-center p-10 border border-black/5 border-b-0 bg-gray-50/50">
-              <div className="text-center md:text-left mb-8 md:mb-0">
-                <h2 className="text-7xl md:text-9xl font-[900] tracking-tighter leading-none">
-                  5.0<span className="text-[var(--accent)]">★</span>
-                </h2>
-                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-400 mt-2">
-                  Verified Marketplace Rating
+          {/* 2-Part Content Area */}
+          <div className="w-full grid grid-cols-12 items-stretch">
+            {/* LEFT PART: Total Review Stats & Slider Controls positioned at the bottom */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 border-b lg:border-b-0 lg:border-r border-black flex flex-col justify-between bg-[#F5F4F0]">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  OVERALL RATING
+                </span>
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="text-6xl font-syne font-black text-black">5.0</span>
+                  <div className="flex flex-col">
+                    <div className="flex text-lg">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <i
+                          key={s}
+                          className="ri-star-fill"
+                          style={{
+                            background: "linear-gradient(135deg, #FFA3D7, #8B9DFF, #FF7626, #FFE270, #6A79FF)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs font-mono font-bold text-neutral-500 mt-1">6 CLIENT REVIEWS</span>
+                  </div>
+                </div>
+                <p className="text-sm font-outfit text-neutral-600 leading-relaxed font-normal max-w-sm mt-6">
+                  100% satisfaction rating across design excellence, modular clean code, transparent communication, and fast turnaround speeds.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-4 w-full md:w-1/3">
-                {[5, 4, 3].map((num) => (
-                  <div key={num} className="flex items-center gap-4">
-                    <span className="text-[10px] font-black w-4">{num}★</span>
-                    <div className="flex-1 h-[2px] bg-black/5 overflow-hidden">
-                      <div
-                        className="h-full bg-[var(--accent)]"
-                        style={{ width: num === 5 ? "100%" : "0%" }}
+              {/* Navigation Controls positioned between Left and Right parts border */}
+              <div className="mt-12 flex flex-col gap-6 border-t border-black/10 pt-8">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-black/40 uppercase tracking-widest font-bold">
+                    {((currentTestimonialIndex) % 6 + 6) % 6 + 1} / 6
+                  </span>
+                  <div className="flex border border-black divide-x divide-black bg-[#F5F4F0]">
+                    <button
+                      onClick={() =>
+                        setCurrentTestimonialIndex((prev) => prev - 1)
+                      }
+                      className="px-6 py-3 hover:bg-black/5 transition-colors font-mono font-bold text-xs uppercase tracking-wider cursor-pointer"
+                    >
+                      PREV
+                    </button>
+                    <button
+                      onClick={() =>
+                        setCurrentTestimonialIndex((prev) => prev + 1)
+                      }
+                      className="px-6 py-3 hover:bg-black/5 transition-colors font-mono font-bold text-xs uppercase tracking-wider cursor-pointer"
+                    >
+                      NEXT
+                    </button>
+                  </div>
+                </div>
+
+                {/* Navigation Dots */}
+                <div className="flex items-center gap-2 mt-2">
+                  {[0, 1, 2, 3, 4, 5].map((idx) => {
+                    const isActive = (((currentTestimonialIndex) % 6 + 6) % 6) === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          // Find closest matching index to prevent large jump animations
+                          const diff = idx - (((currentTestimonialIndex) % 6 + 6) % 6);
+                          setCurrentTestimonialIndex((prev) => prev + diff);
+                        }}
+                        className={`w-2.5 h-2.5 border border-black transition-all duration-300 ${isActive ? "bg-black scale-110" : "bg-transparent"}`}
+                        aria-label={`Go to slide ${idx + 1}`}
                       />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT PART: Testimonial slider (Infinite looping enabled) */}
+            <div className="col-span-12 lg:col-span-6 relative overflow-hidden bg-[#F5F4F0] p-8 lg:p-14 flex items-center">
+              <div
+                className="flex transition-transform duration-500 ease-in-out gap-6 w-full"
+                style={{
+                  transform: `translateX(calc(-${(currentTestimonialIndex) * 300}px - ${(currentTestimonialIndex) * 24}px))`,
+                }}
+                onTransitionEnd={() => {
+                  // If we slide past the original bounds, snap instantly to the real index
+                  const count = 6;
+                  const normalized = ((currentTestimonialIndex) % count + count) % count;
+                  if (currentTestimonialIndex < 0 || currentTestimonialIndex >= count) {
+                    // Temporarily disable transition style before snapping?
+                    // Direct state change is standard for simple setups
+                    setCurrentTestimonialIndex(normalized);
+                  }
+                }}
+              >
+                {/* Clone set before, real set, clone set after for infinite loop scroll padding */}
+                {[
+                  ...[
+                    {
+                      quote: "Working with Krish was a great experience. The website was modern, fast, and exactly what our business needed. Communication was smooth, and every revision was handled quickly.",
+                      name: "Sarah Mitchell",
+                      role: "Founder, Bloom Studio",
+                    },
+                    {
+                      quote: "Our website looks premium and performs flawlessly across all devices. The attention to detail and clean UI exceeded our expectations.",
+                      name: "Daniel Carter",
+                      role: "Marketing Manager, Nexa Solutions",
+                    },
+                    {
+                      quote: "From design to deployment, everything was handled professionally. The final product helped improve our online presence and customer engagement.",
+                      name: "Emma Rodriguez",
+                      role: "Owner, Urban CafÃ©",
+                      isGradient: true,
+                    },
+                    {
+                      quote: "Krish transformed our ideas into a beautiful, responsive website. The loading speed, animations, and user experience are excellent.",
+                      name: "James Wilson",
+                      role: "CEO, BrightTech",
+                    },
+                    {
+                      quote: "The project was delivered on time with exceptional quality. We appreciated the clear communication and willingness to go the extra mile.",
+                      name: "Olivia Brown",
+                      role: "Co-Founder, Elevate Agency",
+                    },
+                    {
+                      quote: "Highly recommended! The website is clean, SEO-friendly, and easy to manage. We've already received positive feedback from our customers.",
+                      name: "Michael Anderson",
+                      role: "Director, Horizon Media",
+                    },
+                  ],
+                  ...[
+                    {
+                      quote: "Working with Krish was a great experience. The website was modern, fast, and exactly what our business needed. Communication was smooth, and every revision was handled quickly.",
+                      name: "Sarah Mitchell",
+                      role: "Founder, Bloom Studio",
+                    },
+                    {
+                      quote: "Our website looks premium and performs flawlessly across all devices. The attention to detail and clean UI exceeded our expectations.",
+                      name: "Daniel Carter",
+                      role: "Marketing Manager, Nexa Solutions",
+                    },
+                    {
+                      quote: "From design to deployment, everything was handled professionally. The final product helped improve our online presence and customer engagement.",
+                      name: "Emma Rodriguez",
+                      role: "Owner, Urban CafÃ©",
+                      isGradient: true,
+                    },
+                    {
+                      quote: "Krish transformed our ideas into a beautiful, responsive website. The loading speed, animations, and user experience are excellent.",
+                      name: "James Wilson",
+                      role: "CEO, BrightTech",
+                    },
+                    {
+                      quote: "The project was delivered on time with exceptional quality. We appreciated the clear communication and willingness to go the extra mile.",
+                      name: "Olivia Brown",
+                      role: "Co-Founder, Elevate Agency",
+                    },
+                    {
+                      quote: "Highly recommended! The website is clean, SEO-friendly, and easy to manage. We've already received positive feedback from our customers.",
+                      name: "Michael Anderson",
+                      role: "Director, Horizon Media",
+                    },
+                  ],
+                  ...[
+                    {
+                      quote: "Working with Krish was a great experience. The website was modern, fast, and exactly what our business needed. Communication was smooth, and every revision was handled quickly.",
+                      name: "Sarah Mitchell",
+                      role: "Founder, Bloom Studio",
+                    },
+                    {
+                      quote: "Our website looks premium and performs flawlessly across all devices. The attention to detail and clean UI exceeded our expectations.",
+                      name: "Daniel Carter",
+                      role: "Marketing Manager, Nexa Solutions",
+                    },
+                    {
+                      quote: "From design to deployment, everything was handled professionally. The final product helped improve our online presence and customer engagement.",
+                      name: "Emma Rodriguez",
+                      role: "Owner, Urban CafÃ©",
+                      isGradient: true,
+                    },
+                    {
+                      quote: "Krish transformed our ideas into a beautiful, responsive website. The loading speed, animations, and user experience are excellent.",
+                      name: "James Wilson",
+                      role: "CEO, BrightTech",
+                    },
+                    {
+                      quote: "The project was delivered on time with exceptional quality. We appreciated the clear communication and willingness to go the extra mile.",
+                      name: "Olivia Brown",
+                      role: "Co-Founder, Elevate Agency",
+                    },
+                    {
+                      quote: "Highly recommended! The website is clean, SEO-friendly, and easy to manage. We've already received positive feedback from our customers.",
+                      name: "Michael Anderson",
+                      role: "Director, Horizon Media",
+                    },
+                  ]
+                ].map((t, idx) => (
+                  <div
+                    key={`${t.name}-${idx}`}
+                    className="w-[300px] shrink-0 flex flex-col justify-between p-8 min-h-[320px] border border-black shadow-sm"
+                    style={t.isGradient ? {
+                      background: `
+                        radial-gradient(at 15% 15%, #FFA3D7 0px, transparent 55%),
+                        radial-gradient(at 85% 15%, #8B9DFF 0px, transparent 55%),
+                        radial-gradient(at 50% 45%, #FF7626 0px, transparent 60%),
+                        radial-gradient(at 80% 85%, #FFE270 0px, transparent 50%),
+                        radial-gradient(at 15% 85%, #6A79FF 0px, transparent 55%),
+                        #FFA566
+                      `
+                    } : {
+                      backgroundColor: "#F5F4F0"
+                    }}
+                  >
+                    {/* Quote content */}
+                    <div>
+                      <span className="text-4xl font-syne font-black text-black/20 leading-none block mb-3">"</span>
+                      <p className="text-sm font-outfit text-black/90 leading-relaxed font-medium">
+                        {t.quote}
+                      </p>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-300">
-                      {num === 5 ? "100%" : "0%"}
-                    </span>
+                    {/* Attribution */}
+                    <div className="mt-8 pt-5 border-t border-black/10">
+                      <p className="text-sm font-syne font-extrabold uppercase tracking-tight text-black">
+                        {t.name}
+                      </p>
+                      <p className="text-xs font-mono text-black/50 uppercase tracking-widest mt-1">
+                        {t.role}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* CLIENT CARDS GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 border border-black/5 border-t-0 lg:[&>*:nth-child(3n)]:border-r-0">
-              {reviews.map((rev) => (
-                <div
-                  key={rev.id}
-                  className="p-8 bg-white
-          border-b border-black/5
-          lg:border-b-0 lg:border-r"
-                >
-                  {/* Client Info */}
-                  <div className="flex items-center gap-4 mb-8">
-                    <img
-                      src={rev.img}
-                      alt={rev.name}
-                      className="w-14 h-14 grayscale border border-black/5 p-1"
-                    />
-                    <div>
-                      <h4 className="font-black uppercase tracking-tighter text-sm">
-                        {rev.name}
-                      </h4>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        {rev.role}
-                      </p>
-                    </div>
+        {/* ================= FAQ SECTION (#faq) ================= */}
+        <section id="faq" className="w-full border-b border-black bg-[#F5F4F0] text-black">
+          <div className="w-full grid grid-cols-12 items-stretch">
+
+            {/* LEFT COLUMN: Section Title */}
+            <div className="col-span-12 lg:col-span-6 p-8 lg:p-14 border-b lg:border-b-0 lg:border-r border-black bg-[#F5F4F0]">
+              <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                â€¢ 08 / FAQ
+              </span>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+                COMMON QUESTIONS.
+              </h2>
+            </div>
+
+            {/* RIGHT COLUMN: FAQ Accordion items */}
+            <div className="col-span-12 lg:col-span-6 bg-[#F5F4F0] divide-y divide-black">
+              {[
+                {
+                  num: "01",
+                  q: "What's the turnaround time?",
+                  a: "Most landing pages take 3-5 days. Business websites typically take 1-2 weeks depending on scope."
+                },
+                {
+                  num: "02",
+                  q: "How many revisions do I get?",
+                  a: "Two rounds of revisions are included in every project before final delivery to ensure you're completely satisfied."
+                },
+                {
+                  num: "03",
+                  q: "Do you handle hosting and domain?",
+                  a: "Yes â€” I can set it up for you completely, or work with your existing hosting/domain if you already have one."
+                },
+                {
+                  num: "04",
+                  q: "What's the payment structure?",
+                  a: "50% advance to start the project, and the remaining 50% on completion before final code handover and launch."
+                },
+                {
+                  num: "05",
+                  q: "Will my website be mobile-friendly and optimized for SEO?",
+                  a: "Absolutely. Every site is built mobile-first, load-speed optimized (scoring 95+ on Lighthouse), and structured with clean semantic markup for search engines."
+                },
+                {
+                  num: "06",
+                  q: "Do you offer custom designs or templates?",
+                  a: "All projects are fully custom-built from scratch. I do not use generic page builders or repetitive templates, ensuring your site stands out."
+                }
+              ].map((faq) => {
+                const isOpen = openFaqId === faq.num;
+                return (
+                  <div key={faq.num} className="w-full border-black">
+                    <button
+                      onClick={() => setOpenFaqId(isOpen ? null : faq.num)}
+                      className="w-full flex items-center justify-between p-8 lg:p-10 text-left cursor-pointer select-none outline-none hover:bg-black/5 transition-colors"
+                    >
+                      <span className="text-sm font-syne font-extrabold uppercase tracking-tight text-black">
+                        {faq.q}
+                      </span>
+                      <span className={`text-xl font-mono font-bold transition-transform duration-300 text-black shrink-0 ml-4 ${isOpen ? "rotate-45" : ""}`}>
+                        +
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-8 lg:px-10 pb-8">
+                        <p className="text-sm font-outfit text-neutral-600 leading-relaxed font-normal">
+                          {faq.a}
+                        </p>
+                      </div>
+                    )}
                   </div>
-
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(rev.stars)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className="w-4 h-4 fill-[var(--accent)]"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-
-                  {/* Review Text */}
-                  <p className="text-lg font-medium tracking-tight leading-snug mb-10 text-black italic">
-                    "{rev.text}"
-                  </p>
-
-                  {/* Footer */}
-                  <div className="pt-6 border-t border-black/5 flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                      Perf_Score
-                    </span>
-                    <span className="text-sm font-[900] text-[var(--accent)]">
-                      {rev.performance}/100
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
-        <div className="py-16">
-          {/* MOBILE: Centered M-Shape with 1.5/2 stroke thickness */}
-          <div className="md:hidden">
-            <svg
-              width="100%"
-              height="40"
-              viewBox="0 0 400 40"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              {/* Background Track - Elegant 1.5px */}
-              <path
-                d="M0 20H130L155 5L200 35L245 5L270 20H400"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1.5"
-              />
-              {/* Animated Accent - Refined 2px */}
-              <path
-                className="animate-draw"
-                d="M130 20L155 5L200 35L245 5L270 20"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray="250"
-                strokeDashoffset="250"
-              />
-            </svg>
-          </div>
 
-          {/* DESKTOP: Centered M-Shape with 1/2 stroke thickness */}
-          <div className="hidden md:block">
-            <svg
-              width="100%"
-              height="60"
-              viewBox="0 0 1000 60"
-              fill="none"
-              preserveAspectRatio="none"
-              className="overflow-visible"
-            >
-              {/* Background Track - Surgical 1px */}
-              <path
-                d="M0 30H380L420 10H480L500 50L520 10H580L620 30H1000"
-                stroke="black"
-                strokeOpacity="0.05"
-                strokeWidth="1"
-              />
-              {/* Animated Accent - Sharp 2px */}
-              <path
-                className="animate-draw"
-                d="M380 30L420 10H480L500 50L520 10H580L620 30"
-                stroke="var(--accent)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray="400"
-                strokeDashoffset="400"
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* contact form  */}
-        <section
-          id="contact"
-          className="container grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-20 py-10"
-        >
-          <div>
-            <h2 className="text-[clamp(3.5rem,10vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter">
-              READY TO <br />
-              <span className="text-[var(--accent)]">GROW?</span>
+        {/* ================= CONTACT SECTION (#contact) ================= */}
+        <section id="contact" className="w-full border-b border-black bg-[#F5F4F0] text-black">
+          {/* Top Header Strip */}
+          <div className="w-full border-b border-black px-8 py-16 lg:px-14 lg:py-24 bg-[#F5F4F0]">
+            <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+              09 / CONTACT
+            </span>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+              LET'S BUILD SOMETHING GREAT.
             </h2>
           </div>
 
-          <form
-            action="https://formspree.io/f/xnjdljle"
-            method="POST"
-            className="group"
-          >
-            {/* Name */}
-            <div className="relative mb-8">
-              <input
-                type="text"
-                name="name"
-                required
-                placeholder="Name"
-                className="w-full bg-transparent border-b border-black/10 py-5 outline-none focus:border-[var(--accent)] transition-colors placeholder:text-black/20"
-              />
-            </div>
-
-            {/* Email */}
-            <div className="relative mb-8">
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Email Address"
-                className="w-full bg-transparent border-b border-black/10 py-5 outline-none focus:border-[var(--accent)] transition-colors placeholder:text-black/20"
-              />
-            </div>
-            {/* Email */}
-            <div className="relative mb-8">
-              <input
-                type="mobile"
-                name="mobile"
-                required
-                placeholder="Mobile Number"
-                className="w-full bg-transparent border-b border-black/10 py-5 outline-none focus:border-[var(--accent)] transition-colors placeholder:text-black/20"
-              />
-            </div>
-
-            {/* Project Type */}
-            <div className="relative mb-8">
-              <select
-                name="project_type"
-                className="w-full bg-transparent border-b border-black/10 py-5 outline-none focus:border-[var(--accent)] appearance-none cursor-pointer text-black/60 focus:text-black"
-              >
-                <option value="">Project Type (Optional)</option>
-                <option value="Website Design">Website Design</option>
-                <option value="Website Development">Website Development</option>
-                <option value="Redesign">Redesign</option>
-                <option value="Not Sure">Not Sure</option>
-              </select>
-
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                <svg
-                  width="10"
-                  height="6"
-                  viewBox="0 0 10 6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M1 1L5 5L9 1" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Message */}
-            <div className="relative mb-12">
-              <textarea
-                rows="3"
-                name="message"
-                required
-                placeholder="Briefly tell me about your project or idea."
-                className="w-full bg-transparent border-b border-black/10 py-5 outline-none focus:border-[var(--accent)] transition-colors placeholder:text-black/20 resize-none"
-              />
-            </div>
-
-            {/* Button */}
-            <button
-              type="submit"
-              className="relative overflow-hidden bg-[var(--accent)] text-white px-12 py-6 uppercase font-black tracking-widest text-xs hover:bg-black transition-all shadow-2xl"
+          {/* Two-column contact info */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 items-stretch">
+            {/* FOR RECRUITERS / HIRING */}
+            <div
+              className="p-8 lg:p-14 border-b lg:border-b-0 lg:border-r border-black flex flex-col gap-8"
+              style={{
+                background: `
+                  radial-gradient(at 15% 15%, #FFA3D7 0px, transparent 55%),
+                  radial-gradient(at 85% 15%, #8B9DFF 0px, transparent 55%),
+                  radial-gradient(at 50% 45%, #FF7626 0px, transparent 60%),
+                  radial-gradient(at 80% 85%, #FFE270 0px, transparent 50%),
+                  radial-gradient(at 15% 85%, #6A79FF 0px, transparent 55%),
+                  #FFA566
+                `,
+              }}
             >
-              Submit
-            </button>
-
-            {/* Trust line */}
-            <p className="mt-4 text-[10px] uppercase tracking-widest opacity-40">
-              No spam. I reply within 24 hours.
-            </p>
-          </form>
-        </section>
-
-        <footer className="border-t border-black/10 pt-20 pb-10 bg-white">
-          <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-              {/* Column 1: Brand Identity */}
-              <div className="col-span-1 md:col-span-1">
-                <div className="flex items-center gap-3 mb-16">
-                  <span className="w-[3px] h-10 bg-[var(--accent)]"></span>
-                  <span className="italic font-black leading-tight">
-                    WEB
-                    <br />
-                    AARC
-                  </span>
-                </div>
-                <p className="text-[11px] leading-relaxed opacity-40 uppercase tracking-widest max-w-[200px]">
-                  Precision-built digital structures for local businesses.
-                </p>
-              </div>
-
-              {/* Column 2: Navigation Links */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-mono uppercase tracking-[0.3em] opacity-30 mb-6">
-                  // Index
-                </h4>
-                <ul className="space-y-3 text-xs font-bold uppercase tracking-tighter">
-                  <li>
-                    <a
-                      href="#hero"
-                      className="hover:text-[var(--accent)] transition-colors"
-                    >
-                      Home
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#services"
-                      className="hover:text-[var(--accent)] transition-colors"
-                    >
-                      Services
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#projects"
-                      className="hover:text-[var(--accent)] transition-colors"
-                    >
-                      Selected Works
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#contact"
-                      className="hover:text-[var(--accent)] transition-colors"
-                    >
-                      Contact
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Column 3: Direct Contact */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-mono uppercase tracking-[0.3em] opacity-30 mb-6">
-                  // Connectivity
-                </h4>
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-black font-bold block mb-6">
+                  FOR RECRUITERS / HIRING
+                </span>
                 <div className="space-y-4">
-                  {/* Email */}
-                  <a
-                    href="mailto:krishrpatel09@gmail.com"
-                    className="block group"
-                  >
-                    <span className="text-[10px] block opacity-40 mb-1">
-                      Email
-                    </span>
-                    <span className="text-xs font-bold border-b border-transparent group-hover:border-[var(--accent)] transition-all">
-                      krishrpatel09@gmail.com
-                    </span>
-                  </a>
-
-                  {/* WhatsApp - Mobile Link */}
-                  <a
-                    href="https://wa.me/9726632563?text=I'm%20interested%20in%20a%20project"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 group text-[var(--accent)]"
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <div>
+                    <span className="text-[10px] font-mono text-black uppercase tracking-widest block mb-1">EMAIL</span>
+                    <a
+                      href="mailto:krishrpatel25@gmail.com"
+                      className="text-sm font-mono font-bold text-black hover:text-black/80 transition-colors"
                     >
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                    </svg>
-                    <span className="text-xs font-black uppercase tracking-tighter">
-                      Chat on WhatsApp
-                    </span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Column 4: Location/Time */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] uppercase tracking-[0.3em] opacity-30 mb-6">
-                  // Presence
-                </h4>
-                <div className="text-xs font-bold uppercase tracking-tighter space-y-1">
-                  <div>Based in Ahmedabad, IN</div>
-                  <div className="opacity-40 font-normal">
-                    Available Worldwide
+                      krishrpatel25@gmail.com
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-4 pt-2">
+                    <a
+                      href="/resume.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 border border-black bg-[#F5F4F0] font-syne font-bold uppercase tracking-wider text-xs text-black transition-colors duration-300 hover:bg-neutral-300"
+                    >
+                      <span>View Resume</span>
+                      <span>&rarr;</span>
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-6 pt-2">
+                    <a
+                      href="https://linkedin.com/in/krishrpatel25"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-mono font-bold uppercase tracking-wider text-black hover:text-black/80 transition-colors"
+                    >
+                      LinkedIn
+                    </a>
+                    <span className="text-black">·</span>
+                    <a
+                      href="https://github.com/krishrpatel25"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-mono font-bold uppercase tracking-wider text-black hover:text-black/80 transition-colors"
+                    >
+                      GitHub
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Legal Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-black/5 text-[9px] opacity-30 uppercase tracking-[0.3em] gap-4">
-              <div>Web Aarc © 2026 // All Rights Reserved</div>
-              <div className="flex gap-8">
-                <a href="#" className="hover:text-black transition-colors">
-                  Privacy Policy
-                </a>
-                <a href="#" className="hover:text-black transition-colors">
-                  Terms of Service
-                </a>
+            {/* FOR CLIENTS / PROJECTS */}
+            <div className="p-8 lg:p-14 flex flex-col justify-between gap-8">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-6">
+                  FOR CLIENTS / PROJECTS
+                </span>
+                <div className="space-y-6 mb-8">
+                  <a
+                    href="https://wa.me/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-black bg-[#F5F4F0] font-syne font-bold uppercase tracking-wider text-xs text-black transition-colors duration-300 hover:bg-neutral-300"
+                  >
+                    <span>Talk on WhatsApp</span>
+                    <span>&rarr;</span>
+                  </a>
+                  <p className="text-xs font-mono text-neutral-500 uppercase tracking-wider">
+                    Based in Ahmedabad, IN. Available Worldwide.
+                  </p>
+                </div>
+
+                {/* Form inside Clients Column */}
+                <div className="border-t border-black/10 pt-8">
+                  <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-6">
+                    SEND A MESSAGE
+                  </span>
+                  <form
+                    onSubmit={(e) => { e.preventDefault(); alert("Message sent! We'll get back to you soon."); }}
+                    className="space-y-6"
+                  >
+                    {/* Name */}
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="NAME"
+                        required
+                        className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                      />
+                    </div>
+                    {/* Email */}
+                    <div className="relative">
+                      <input
+                        type="email"
+                        placeholder="EMAIL ADDRESS"
+                        required
+                        className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                      />
+                    </div>
+                    {/* Mobile */}
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        placeholder="MOBILE NUMBER"
+                        className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                      />
+                    </div>
+                    {/* Project Type */}
+                    <div className="relative">
+                      <select
+                        className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-neutral-400 focus:outline-none focus:border-black transition-colors appearance-none cursor-pointer"
+                      >
+                        <option value="">PROJECT TYPE (OPTIONAL)</option>
+                        <option value="landing">Landing Page</option>
+                        <option value="business">Business Website</option>
+                        <option value="redesign">Redesign</option>
+                        <option value="consultation">Consultation</option>
+                      </select>
+                      <span className="absolute right-0 top-1.5 pointer-events-none text-neutral-500 text-xs">&darr;</span>
+                    </div>
+
+                    {/* Submit */}
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        className="px-6 py-2.5 border border-black bg-[#F5F4F0] text-black font-syne font-bold uppercase tracking-wider text-xs transition-colors duration-300 hover:bg-neutral-300 cursor-pointer"
+                      >
+                        SUBMIT
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
               </div>
             </div>
           </div>
+        </section>
+      </div>
+    </main>
+
+      <footer className="w-full border-t border-black bg-[#F5F4F0] pt-16 pb-10 px-8 lg:px-14">
+          <div className="px-8 lg:px-14">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 border-b border-black pb-16">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  • 10 / FOOTER
+                </span>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-400 font-bold block mb-2">
+                  WEB AARC LABS
+                </span>
+                <p className="text-sm font-outfit text-black font-semibold max-w-xs uppercase tracking-tight">
+                  Krish Patel — Web Developer
+                </p>
+              </div>
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  QUICK LINKS
+                </span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {[
+                    { label: "About", href: "#about" },
+                    { label: "Tech Stack", href: "#tech-stack" },
+                    { label: "Work", href: "#projects" },
+                    { label: "Services", href: "#services" },
+                    { label: "Contact", href: "#contact" }
+                  ].map((link, idx, arr) => (
+                    <span key={link.href} className="text-sm font-mono font-bold uppercase tracking-wider text-black flex items-center">
+                      <a href={link.href} className="hover:text-neutral-500 transition-colors">
+                        {link.label}
+                      </a>
+                      {idx < arr.length - 1 && <span className="text-neutral-300 ml-3">&middot;</span>}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+                  CONNECT
+                </span>
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://github.com/krishrpatel25"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono font-bold uppercase tracking-wider text-black hover:text-neutral-500 transition-colors"
+                  >
+                    GitHub
+                  </a>
+                  <span className="text-neutral-300">&middot;</span>
+                  <a
+                    href="https://linkedin.com/in/krishrpatel25"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono font-bold uppercase tracking-wider text-black hover:text-neutral-500 transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                  <span className="text-neutral-300">&middot;</span>
+                  <a
+                    href="mailto:krishrpatel25@gmail.com"
+                    className="text-sm font-mono font-bold uppercase tracking-wider text-black hover:text-neutral-500 transition-colors"
+                  >
+                    Email
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <span className="text-xs font-mono text-black/60 uppercase tracking-wider">
+                Based in Ahmedabad, IN. Available Worldwide.
+              </span>
+              <span className="text-xs font-mono text-black/40 uppercase tracking-widest">
+                &copy; 2026 Web Aarc Labs. All rights reserved.
+              </span>
+            </div>
+          </div>
         </footer>
-      </main>
     </>
+  );
+}
+function HoverPreviewClickOpenProjectsSection({ projects }) {
+  const [hoveredId, setHoveredId] = useState(null);
+  const [openId, setOpenId] = useState(null);
+  const signatureMultiColorGradient =
+    "bg-[radial-gradient(at_top_left,#FFA3C5_0%,transparent_55%),radial-gradient(at_bottom_left,#6C7CFF_0%,transparent_55%),radial-gradient(at_top_right,#7B8CFF_0%,transparent_55%),radial-gradient(at_bottom_right,#FFD56B_0%,transparent_55%),linear-gradient(to_bottom_right,#FFB295,#F8B06C)]";
+  return (
+    <section
+      id="projects"
+      className="w-full border-b border-black bg-[#F5F4F0] text-black"
+    >
+      {/* Top Header Strip */}
+      <div className="w-full border-b border-black px-8 py-16 lg:px-14 lg:py-24 bg-[#F5F4F0]">
+        <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
+          {"•"} 04 / SELECTED WORK
+        </span>
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold uppercase tracking-tight text-black leading-[0.95]">
+          FEATURED PROJECTS.
+        </h2>
+      </div>
+      {/* Stacked Project Strips */}
+      <div
+        className="w-full bg-[#F5F4F0] divide-y divide-black"
+        onMouseLeave={() => setHoveredId(null)}
+      >
+        {projects.map((project, idx) => {
+          const isHovered = hoveredId === project.id;
+          const isOpen = openId === project.id;
+          const showMiddleHoverImage = isHovered && !isOpen;
+          return (
+            <div
+              key={project.id}
+              onMouseEnter={() => setHoveredId(project.id)}
+              className="w-full bg-[#F5F4F0] overflow-hidden"
+            >
+              {/* Project Strip Header Bar */}
+              <button
+                onClick={() => setOpenId(isOpen ? null : project.id)}
+                className={`w-full grid grid-cols-12 items-stretch text-left cursor-pointer bg-[#F5F4F0] text-black transition-all duration-300 ${showMiddleHoverImage ? "h-28 lg:h-32" : "h-20 lg:h-24"
+                  }`}
+              >
+                {/* Left Part */}
+                <div className="col-span-7 md:col-span-5 border-r border-black flex items-center space-x-4 sm:space-x-6 px-6 sm:px-8">
+                  <span className="text-xs sm:text-sm font-mono font-bold tracking-widest text-neutral-500 shrink-0">
+                    0{idx + 1}.
+                  </span>
+                  <h3 className="font-syne text-xl sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-tight text-black truncate">
+                    {project.title}
+                  </h3>
+                </div>
+                {/* Middle Part: Hover Image */}
+                <div className="hidden md:flex col-span-2 border-r border-black bg-neutral-200 overflow-hidden relative items-center justify-center p-0">
+                  {showMiddleHoverImage ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover object-top transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#F5F4F0]" />
+                  )}
+                </div>
+                {/* Right Part */}
+                <div className="col-span-5 md:col-span-5 flex items-center justify-end space-x-4 sm:space-x-6 px-6 sm:px-8">
+                  <span className="hidden sm:inline-block text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 truncate">
+                    {project.category}
+                  </span>
+                  <span
+                    className={`text-lg font-mono font-bold transition-transform duration-300 text-black ${isOpen ? "rotate-45" : ""}`}
+                  >
+                    +
+                  </span>
+                </div>
+              </button>
+              {/* Expanded Content */}
+              {isOpen && (
+                <div className="w-full grid grid-cols-12 items-stretch border-t border-black bg-white">
+                  {/* Left Info Panel */}
+                  <div
+                    className={`col-span-12 md:col-span-5 p-8 lg:p-12 border-b md:border-b-0 md:border-r border-black flex flex-col justify-between ${signatureMultiColorGradient} text-black`}
+                  >
+                    <div>
+                      <span className="text-xs font-mono text-black/60 block mb-4 uppercase tracking-wider font-bold">
+                        0{idx + 1} {project.category} // {project.year}
+                      </span>
+                      <h4 className="font-syne text-2xl sm:text-3xl lg:text-4xl font-extrabold text-black uppercase tracking-tight mb-2">
+                        {project.title}
+                      </h4>
+                      <p className="text-xs font-mono text-black/70 uppercase tracking-widest mb-6 font-semibold">
+                        {project.subtitle}
+                      </p>
+                      <p className="text-sm font-outfit text-black/90 leading-relaxed font-medium mb-6">
+                        {project.description}
+                      </p>
+                      <div className="text-xs font-mono text-black/80 font-bold uppercase tracking-wider space-y-1 mb-8">
+                        <div>YEAR: {project.year}</div>
+                        <div>TURNAROUND: {project.openingHours}</div>
+                      </div>
+                    </div>
+                    <div className="pt-6 border-t border-black/20 flex items-center space-x-4">
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 border border-black bg-[#F5F4F0] text-black text-xs font-mono font-bold uppercase tracking-wider inline-flex items-center space-x-2 transition-colors duration-300 hover:bg-neutral-300"
+                      >
+                        <span>Visit Site</span>
+                        <span>&#x2197;</span>
+                      </a>
+                    </div>
+                  </div>
+                  {/* Right Image Panel */}
+                  <div className="col-span-12 md:col-span-7 relative min-h-[200px] md:min-h-[260px] overflow-hidden bg-neutral-200 flex items-center justify-center p-0">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

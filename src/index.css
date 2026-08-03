@@ -25,78 +25,9 @@ body {
   z-index: 50;
 }
 
-/* ================= LENS CURSOR ================= */
-#lens {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-
-  transition:
-    width 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    height 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    background 0.25s ease,
-    border 0.25s ease,
-    backdrop-filter 0.25s ease;
-}
-
-/* Rotating dashed ring */
-#lens::after {
-  content: "";
-  position: absolute;
-  inset: -12px;
-  border: 1px dashed var(--accent);
-  border-radius: 50%;
-  opacity: 0.5;
-  animation: spin 6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ================= HOVER EFFECTS (CSS ONLY) ================= */
-
-/* Navbar hover */
-body:has(nav a:hover) #lens,
-body:has(nav button:hover) #lens {
-  width: 60px;
-  height: 60px;
-  background: transparent;
-  border: 2px solid var(--accent);
-}
-
-/* Project card hover (bigger) */
-body:has(.project-card:hover) #lens {
-  width: 72px;
-  height: 72px;
-  background: transparent;
-  border: 2px solid var(--accent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* ================= VERTICAL NAV TEXT ================= */
-.vertical-text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
-/* ================= MOBILE SAFETY ================= */
-@media (max-width: 768px) {
-  #lens {
-    display: none;
-  }
-}
-
-
-body:has(.project-card:hover) #lens::before {
-  content: "VIEW";
-  opacity: 1;
+/* ================= ARCHITECTURAL DRAFTING FOCUS FRAME CURSOR ================= */
+html, body, button, a, input, textarea, select, [role="button"] {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><path d="M1 7V1H7M19 1H25V7M25 19V25H19M7 25H1V19" stroke="black" stroke-width="2" fill="none"/><circle cx="13" cy="13" r="2.5" fill="black"/></svg>') 13 13, auto !important;
 }
 
 .container {

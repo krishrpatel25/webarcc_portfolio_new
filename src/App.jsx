@@ -189,13 +189,39 @@ export default function App() {
                 businesses look professional & grow online.
               </p>
             </div>
-            <div className="col-span-12 lg:col-span-2 px-6 py-6 md:py-10 flex items-center justify-center space-x-4">
-              <span className="font-syne text-5xl lg:text-6xl font-light text-black tracking-tighter">
-                20
-              </span>
-              <span className="font-syne text-5xl lg:text-6xl font-light text-black tracking-tighter">
-                26
-              </span>
+            <div className="col-span-12 lg:col-span-2 px-6 py-6 md:py-10 flex items-center justify-center gap-3">
+              <a
+                href="mailto:krishrpatel25@gmail.com"
+                className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-lg text-black hover:bg-black hover:text-white transition-colors"
+                title="Email"
+              >
+                <i className="ri-mail-line"></i>
+              </a>
+              <a
+                href="https://wa.me/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-lg text-black hover:bg-black hover:text-white transition-colors"
+                title="WhatsApp"
+              >
+                <i className="ri-whatsapp-line"></i>
+              </a>
+              <a
+                href="https://instagram.com/krishrpatel25"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-lg text-black hover:bg-black hover:text-white transition-colors"
+                title="Instagram"
+              >
+                <i className="ri-instagram-line"></i>
+              </a>
+              <a
+                href="tel:"
+                className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-lg text-black hover:bg-black hover:text-white transition-colors"
+                title="Call"
+              >
+                <i className="ri-phone-line"></i>
+              </a>
             </div>
           </div>
           {/* 2-Column Equal 50-50 Width Tierra Showcase */}
@@ -203,41 +229,6 @@ export default function App() {
             {/* Left Column (50% Width): Intro card & profile info */}
             <div className="col-span-12 lg:col-span-6 border-b lg:border-b-0 lg:border-r border-black flex flex-col justify-between p-8 lg:p-12 bg-[#F5F4F0]">
               <div>
-                {/* Social media icons */}
-                <div className="flex items-center gap-3 mb-6">
-                  <a
-                    href="https://wa.me/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-base text-black hover:bg-black hover:text-white transition-colors"
-                    title="WhatsApp"
-                  >
-                    <i className="ri-whatsapp-line"></i>
-                  </a>
-                  <a
-                    href="https://instagram.com/krishrpatel25"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-base text-black hover:bg-black hover:text-white transition-colors"
-                    title="Instagram"
-                  >
-                    <i className="ri-instagram-line"></i>
-                  </a>
-                  <a
-                    href="tel:"
-                    className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-base text-black hover:bg-black hover:text-white transition-colors"
-                    title="Call"
-                  >
-                    <i className="ri-phone-line"></i>
-                  </a>
-                  <a
-                    href="mailto:krishrpatel25@gmail.com"
-                    className="w-10 h-10 rounded-full border border-black flex items-center justify-center text-base text-black hover:bg-black hover:text-white transition-colors"
-                    title="Email"
-                  >
-                    <i className="ri-mail-line"></i>
-                  </a>
-                </div>
 
                 <p className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold text-black leading-tight">
                   Krish Patel Web Developer

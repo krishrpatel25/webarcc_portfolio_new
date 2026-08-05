@@ -14,6 +14,27 @@ body {
   overflow-x: hidden;
 }
 
+/* ================= LENIS SMOOTH SCROLL STYLES ================= */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 /* ================= PROGRESS BAR ================= */
 #progress {
   position: fixed;
@@ -70,4 +91,20 @@ html, body, button, a, input, textarea, select, [role="button"] {
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
+}
+
+/* ================= HIDE SPLINE WATERMARK LOGO ================= */
+a[href*="spline.design"], 
+#logo, 
+.spline-watermark,
+[class*="spline-watermark"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ================= 3D CANVAS DRAG HOVER CURSOR ================= */
+.canvas-3d-hover, .canvas-3d-hover * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M1 10V1H10M30 1H39V10M39 30V39H30M10 39H1V30" stroke="black" stroke-width="2" fill="none"/><circle cx="20" cy="20" r="3.5" fill="black"/></svg>') 20 20, auto !important;
 }

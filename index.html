@@ -1,8 +1,28 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        const originalAttachShadow = Element.prototype.attachShadow;
+        Element.prototype.attachShadow = function(options) {
+          if (options && options.mode === 'closed') {
+            options.mode = 'open';
+          }
+          const shadowRoot = originalAttachShadow.call(this, options);
+          const interval = setInterval(() => {
+            const logo = shadowRoot.querySelector('#logo');
+            if (logo) {
+              logo.remove();
+              clearInterval(interval);
+            }
+          }, 100);
+          setTimeout(() => clearInterval(interval), 10000);
+          return shadowRoot;
+        };
+      })();
+    </script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
   href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
@@ -13,10 +33,36 @@
   rel="stylesheet"
 />
 
+    <!-- Critical Image Preloads for Instant Performance -->
+    <link rel="preload" as="image" href="/hero_profile_pic.webp" />
+    <link rel="preload" as="image" href="/robot.png" />
+    <link rel="preload" as="image" href="/aksharidcards_hero.png" />
+
     <title>Portfolio : Krish Patel</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Lenis Smooth Scroll CDN -->
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+    <script>
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
+        infinite: false,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+
+      requestAnimationFrame(raf);
+    </script>
   </body>
 </html>

@@ -31,10 +31,10 @@ export default function App() {
       setLoadingNum(count);
       if (count >= 100) clearInterval(counter);
     }, 12);
-    // Start vanishing after counter finishes
-    const t1 = setTimeout(() => setPixelsVanishing(true), 1350);
-    // Remove from DOM after all vanish
-    const t2 = setTimeout(() => setShowPixelIntro(false), 2500);
+    // Start vanishing when loading reaches 20% (around 240ms)
+    const t1 = setTimeout(() => setPixelsVanishing(true), 240);
+    // Remove overlay from DOM once animation finishes
+    const t2 = setTimeout(() => setShowPixelIntro(false), 1800);
     return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
   }, []);
 

@@ -287,20 +287,22 @@ export default function App() {
     <>
       {/* ================= PIXEL INTRO OVERLAY ================= */}
       {showPixelIntro && (
-        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none" }}>
+        <div
+          className="fixed inset-0 z-[99999] grid"
+          style={{
+            pointerEvents: "none",
+            gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+            gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+          }}
+        >
           {/* Pixel grid */}
           {pixelDelays.map((delay, i) => {
-            const col = i % COLS;
-            const row = Math.floor(i / COLS);
             return (
               <div
                 key={i}
                 style={{
-                  position: "absolute",
-                  left: `${(col / COLS) * 100}%`,
-                  top: `${(row / ROWS) * 100}%`,
-                  width: `${100 / COLS}%`,
-                  height: `${100 / ROWS}%`,
+                  width: "100%",
+                  height: "100%",
                   backgroundColor: "#F5F4F0",
                   opacity: pixelsVanishing ? 0 : 1,
                   transition: `opacity 0.7s ease ${delay}ms`,

@@ -328,6 +328,25 @@ export default function App() {
           >
             Loading Portfolio
           </div>
+          {/* Top-left brand logo matching navbar */}
+          <div
+            style={{
+              position: "absolute",
+              top: "24px",
+              left: "24px",
+              fontFamily: "'Syne', sans-serif",
+              fontSize: "1.5rem",
+              fontWeight: "700",
+              color: "#000",
+              letterSpacing: "-0.02em",
+              textTransform: "lowercase",
+              opacity: pixelsVanishing ? 0 : 1,
+              transition: "opacity 0.4s ease",
+              userSelect: "none",
+            }}
+          >
+            web aarc<span style={{ color: "#a3a3a3" }}>.</span>
+          </div>
         </div>
       )}
       {/* Scroll Progress Indicator */}

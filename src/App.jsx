@@ -20,10 +20,23 @@ export default function App() {
   const [pixelDelays] = useState(() =>
     Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 1400))
   );
-  const [showPixelIntro, setShowPixelIntro] = useState(true);
+  const [showPixelIntro, setShowPixelIntro] = useState(() => {
+    // Check if session storage flag exists
+    if (typeof window !== "undefined") {
+      const hasLoaded = sessionStorage.getItem("hasLoadedPortfolio");
+      return !hasLoaded;
+    }
+    return true;
+  });
   const [pixelsVanishing, setPixelsVanishing] = useState(false);
   const [loadingNum, setLoadingNum] = useState(0);
+
   useEffect(() => {
+    if (!showPixelIntro) return;
+
+    // Set flag so it won't show again in this session
+    sessionStorage.setItem("hasLoadedPortfolio", "true");
+
     // Count 0 → 100 over 1200ms
     let count = 0;
     const counter = setInterval(() => {
@@ -36,7 +49,7 @@ export default function App() {
     // Remove overlay from DOM once all pixels have finished fading slowly (1350ms start + 1400ms max delay + 1600ms transition = 4350ms)
     const t2 = setTimeout(() => setShowPixelIntro(false), 4400);
     return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+  }, [showPixelIntro]);
 
   // Typewriter animation
   const roles = [

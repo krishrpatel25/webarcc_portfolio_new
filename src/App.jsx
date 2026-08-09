@@ -1394,12 +1394,12 @@ export default function App() {
         <div className="px-0 sm:px-6 lg:px-14">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 border-b border-black pb-16">
             <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-4">
-                • 10 / FOOTER
-              </span>
-              <span className="text-xs font-mono uppercase tracking-widest text-neutral-400 font-bold block mb-2">
-                WEB AARC LABS
-              </span>
+              <a
+                href="#hero"
+                className="font-syne text-xl sm:text-2xl font-bold tracking-tight text-black lowercase flex items-center gap-1.5 mb-4"
+              >
+                web aarc<span className="text-neutral-400">.</span>
+              </a>
               <p className="text-sm font-outfit text-black font-semibold max-w-xs uppercase tracking-tight">
                 Krish Patel — Web Developer
               </p>

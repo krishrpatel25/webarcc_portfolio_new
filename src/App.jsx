@@ -18,7 +18,7 @@ export default function App() {
   const COLS = 8;
   const ROWS = 5;
   const [pixelDelays] = useState(() =>
-    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 900))
+    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 1400))
   );
   const [showPixelIntro, setShowPixelIntro] = useState(true);
   const [pixelsVanishing, setPixelsVanishing] = useState(false);
@@ -33,8 +33,8 @@ export default function App() {
     }, 12);
     // Start vanishing only after the loading reaches 100% (takes 1200ms + 150ms buffer = 1350ms)
     const t1 = setTimeout(() => setPixelsVanishing(true), 1350);
-    // Remove overlay from DOM once all pixels have finished fading
-    const t2 = setTimeout(() => setShowPixelIntro(false), 2700);
+    // Remove overlay from DOM once all pixels have finished fading slowly (1350ms start + 1400ms max delay + 1600ms transition = 4350ms)
+    const t2 = setTimeout(() => setShowPixelIntro(false), 4400);
     return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -284,7 +284,7 @@ export default function App() {
                   height: `${100 / ROWS}%`,
                   backgroundColor: "#F5F4F0",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: `opacity 0.8s ease ${delay}ms`,
+                  transition: `opacity 1.6s ease ${delay}ms`,
                 }}
               />
             );

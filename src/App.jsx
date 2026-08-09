@@ -22,6 +22,7 @@ export default function App() {
   const [pixelDelays, setPixelDelays] = useState([]);
 
   useEffect(() => {
+    if (!showPixelIntro) return;
     const isMobile = window.innerWidth < 768;
     const cols = isMobile ? 4 : 8;
     const rows = isMobile ? 10 : 5;
@@ -29,7 +30,7 @@ export default function App() {
     setPixelDelays(
       Array.from({ length: cols * rows }, () => Math.floor(Math.random() * 2800))
     );
-  }, []);
+  }, [showPixelIntro]);
 
   const COLS = gridSize.cols;
   const ROWS = gridSize.rows;

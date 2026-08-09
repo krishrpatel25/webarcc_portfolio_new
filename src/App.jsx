@@ -484,10 +484,7 @@ export default function App() {
                       Available For Freelance
                     </span>
                   </div>
-                  {/* Subheading */}
-                  <p className="mt-3 text-xs font-mono text-neutral-500 uppercase tracking-widest">
-                    Based in Ahmedabad &nbsp;&middot;&nbsp; Available Worldwide
-                  </p>
+
                 </div>
                 <div className="mt-8 pt-6 border-t border-neutral-300">
                   <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-1">

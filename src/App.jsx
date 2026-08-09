@@ -285,10 +285,8 @@ export default function App() {
                   backgroundColor: "#F5F4F0",
                   border: "1px solid #000",
                   boxSizing: "border-box",
-                  transform: pixelsVanishing ? "scale(0)" : "scale(1)",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: `transform 0.6s cubic-bezier(0.4,0,0.2,1) ${delay}ms, opacity 0.6s ease ${delay}ms`,
-                  transformOrigin: "center",
+                  transition: `opacity 0.7s ease ${delay}ms`,
                 }}
               />
             );

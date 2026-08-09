@@ -449,10 +449,6 @@ export default function App() {
                         opacity: roleFading ? 0 : 1,
                         transform: roleFading ? "translateY(10px)" : "translateY(0px)",
                         transition: "opacity 0.4s ease, transform 0.4s ease",
-                        background: "linear-gradient(90deg, #000 0%, #555 100%)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
                       }}
                     >
                       {roles[roleIndex]}

@@ -14,6 +14,20 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
+  // Pixel intro animation
+  const COLS = 12;
+  const ROWS = 8;
+  const [pixelDelays] = useState(() =>
+    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 1000))
+  );
+  const [showPixelIntro, setShowPixelIntro] = useState(true);
+  const [pixelsVanishing, setPixelsVanishing] = useState(false);
+  useEffect(() => {
+    const t1 = setTimeout(() => setPixelsVanishing(true), 250);
+    const t2 = setTimeout(() => setShowPixelIntro(false), 1800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
   // Typewriter animation
   const roles = [
     "Full-Stack Developer",
@@ -242,6 +256,32 @@ export default function App() {
   }, []);
   return (
     <>
+      {/* ================= PIXEL INTRO OVERLAY ================= */}
+      {showPixelIntro && (
+        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none" }}>
+          {pixelDelays.map((delay, i) => {
+            const col = i % COLS;
+            const row = Math.floor(i / COLS);
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: `${(col / COLS) * 100}%`,
+                  top: `${(row / ROWS) * 100}%`,
+                  width: `${100 / COLS}%`,
+                  height: `${100 / ROWS}%`,
+                  backgroundColor: "#0d0d0d",
+                  transform: pixelsVanishing ? "scale(0)" : "scale(1)",
+                  opacity: pixelsVanishing ? 0 : 1,
+                  transition: `transform 0.55s cubic-bezier(0.4,0,0.2,1) ${delay}ms, opacity 0.55s ease ${delay}ms`,
+                  transformOrigin: "center",
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
       {/* Scroll Progress Indicator */}
       <div
         id="progress"

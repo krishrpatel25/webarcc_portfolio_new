@@ -14,12 +14,26 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
-  // Pixel intro animation
-  const COLS = 8;
-  const ROWS = 5;
-  const [pixelDelays] = useState(() =>
-    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 2800))
-  );
+  // Pixel intro animation dynamic grids
+  const [gridSize, setGridSize] = useState(() => {
+    // SSR safe default (desktop size)
+    return { cols: 8, rows: 5 };
+  });
+  const [pixelDelays, setPixelDelays] = useState([]);
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    const cols = isMobile ? 4 : 8;
+    const rows = isMobile ? 10 : 5;
+    setGridSize({ cols, rows });
+    setPixelDelays(
+      Array.from({ length: cols * rows }, () => Math.floor(Math.random() * 2800))
+    );
+  }, []);
+
+  const COLS = gridSize.cols;
+  const ROWS = gridSize.rows;
+
   const [showPixelIntro, setShowPixelIntro] = useState(() => {
     // Check if session storage flag exists
     if (typeof window !== "undefined") {

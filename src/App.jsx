@@ -1385,7 +1385,7 @@ export default function App() {
                     </span>
                     {formStatus === "success" ? (
                       <div className="py-10 flex flex-col items-start gap-3">
-                        <span className="text-2xl">✅</span>
+                        <i className="ri-check-circle-line text-4xl text-black"></i>
                         <p className="text-sm font-syne font-bold uppercase tracking-wider text-black">
                           Message sent successfully!
                         </p>

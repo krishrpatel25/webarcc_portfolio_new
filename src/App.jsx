@@ -16,7 +16,7 @@ export default function App() {
 
 
 
-  // Typewriter animation
+  // Roles configuration for typewriter header
   const roles = [
     "Full-Stack Developer",
     "UI/UX Designer",

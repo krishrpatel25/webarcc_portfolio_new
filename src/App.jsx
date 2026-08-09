@@ -37,7 +37,9 @@ export default function App() {
     if (!showPixelIntro) return;
     const isMobile = window.innerWidth < 768;
     const cols = isMobile ? 4 : 8;
-    const rows = isMobile ? 10 : 5;
+    // Calculate rows to make height match width of columns perfectly
+    const cellWidth = window.innerWidth / cols;
+    const rows = Math.ceil(window.innerHeight / cellWidth);
     setGridSize({ cols, rows });
     setPixelDelays(
       Array.from({ length: cols * rows }, () => Math.floor(Math.random() * 2800))

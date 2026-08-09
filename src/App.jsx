@@ -480,7 +480,7 @@ export default function App() {
                   {/* Availability badge */}
                   <div className="mt-4 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 border border-black/20 bg-black/5 text-[10px] font-mono font-bold uppercase tracking-widest text-black">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" style={{ animation: "blink 1.5s step-end infinite" }} />
+                      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: "linear-gradient(135deg, #A8D4E8 0%, #B4D8E8 40%, #C0EAA8 70%, #A8D4E8 100%)", animation: "blink 1.5s step-end infinite" }} />
                       Available For Freelance
                     </span>
                   </div>

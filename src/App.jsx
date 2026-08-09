@@ -14,6 +14,62 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
+  // Contact form state
+  const [formData, setFormData] = useState({ name: "", email: "", mobile: "", projectType: "", brief: "" });
+  const [formErrors, setFormErrors] = useState({});
+  const [formStatus, setFormStatus] = useState("idle"); // idle | submitting | success | error
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.name.trim()) errors.name = "Name is required.";
+    if (!formData.email.trim()) {
+      errors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Enter a valid email address.";
+    }
+    if (!formData.mobile.trim()) {
+      errors.mobile = "Mobile number is required.";
+    } else if (!/^[\d\s\+\-\(\)]{7,15}$/.test(formData.mobile)) {
+      errors.mobile = "Enter a valid mobile number.";
+    }
+    if (!formData.projectType) errors.projectType = "Please select a project type.";
+    return errors;
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    setFormStatus("submitting");
+    try {
+      const res = await fetch("https://formspree.io/f/xeajedbq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          projectType: formData.projectType,
+          brief: formData.brief || "(Not provided)",
+        }),
+      });
+      if (res.ok) {
+        setFormStatus("success");
+        setFormData({ name: "", email: "", mobile: "", projectType: "", brief: "" });
+      } else {
+        setFormStatus("error");
+      }
+    } catch {
+      setFormStatus("error");
+    }
+  };
+
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
@@ -1327,60 +1383,127 @@ export default function App() {
                     <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold block mb-6">
                       SEND A MESSAGE
                     </span>
+                    {formStatus === "success" ? (
+                      <div className="py-10 flex flex-col items-start gap-3">
+                        <span className="text-2xl">✅</span>
+                        <p className="text-sm font-syne font-bold uppercase tracking-wider text-black">
+                          Message sent successfully!
+                        </p>
+                        <p className="text-xs font-mono text-neutral-500 uppercase tracking-wider">
+                          I'll get back to you within 24 hours.
+                        </p>
+                        <button
+                          onClick={() => setFormStatus("idle")}
+                          className="mt-4 text-xs font-mono font-bold uppercase tracking-wider text-black underline underline-offset-4 hover:text-neutral-500 transition-colors cursor-pointer"
+                        >
+                          Send another message
+                        </button>
+                      </div>
+                    ) : (
                     <form
-                      onSubmit={(e) => { e.preventDefault(); alert("Message sent! We'll get back to you soon."); }}
+                      onSubmit={handleFormSubmit}
+                      noValidate
                       className="space-y-6"
                     >
                       {/* Name */}
                       <div className="relative">
                         <input
+                          id="contact-name"
                           type="text"
-                          placeholder="NAME"
-                          required
-                          className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleFormChange}
+                          placeholder="NAME *"
+                          className={`w-full bg-transparent border-b pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none transition-colors ${formErrors.name ? "border-red-500" : "border-black/30 focus:border-black"}`}
                         />
+                        {formErrors.name && (
+                          <span className="text-[10px] font-mono text-red-500 uppercase tracking-wider mt-1 block">{formErrors.name}</span>
+                        )}
                       </div>
                       {/* Email */}
                       <div className="relative">
                         <input
+                          id="contact-email"
                           type="email"
-                          placeholder="EMAIL ADDRESS"
-                          required
-                          className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleFormChange}
+                          placeholder="EMAIL ADDRESS *"
+                          className={`w-full bg-transparent border-b pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none transition-colors ${formErrors.email ? "border-red-500" : "border-black/30 focus:border-black"}`}
                         />
+                        {formErrors.email && (
+                          <span className="text-[10px] font-mono text-red-500 uppercase tracking-wider mt-1 block">{formErrors.email}</span>
+                        )}
                       </div>
                       {/* Mobile */}
                       <div className="relative">
                         <input
+                          id="contact-mobile"
                           type="tel"
-                          placeholder="MOBILE NUMBER"
-                          className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                          name="mobile"
+                          value={formData.mobile}
+                          onChange={handleFormChange}
+                          placeholder="MOBILE NUMBER *"
+                          className={`w-full bg-transparent border-b pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none transition-colors ${formErrors.mobile ? "border-red-500" : "border-black/30 focus:border-black"}`}
                         />
+                        {formErrors.mobile && (
+                          <span className="text-[10px] font-mono text-red-500 uppercase tracking-wider mt-1 block">{formErrors.mobile}</span>
+                        )}
                       </div>
                       {/* Project Type */}
                       <div className="relative">
                         <select
-                          className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-neutral-400 focus:outline-none focus:border-black transition-colors appearance-none cursor-pointer"
+                          id="contact-project-type"
+                          name="projectType"
+                          value={formData.projectType}
+                          onChange={handleFormChange}
+                          className={`w-full bg-transparent border-b pb-2 text-xs font-mono uppercase tracking-wider focus:outline-none transition-colors appearance-none cursor-pointer ${formErrors.projectType ? "border-red-500 text-red-400" : "border-black/30 focus:border-black text-neutral-400"} ${formData.projectType ? "text-black" : ""}`}
                         >
-                          <option value="">PROJECT TYPE (OPTIONAL)</option>
+                          <option value="">PROJECT TYPE *</option>
                           <option value="landing">Landing Page</option>
                           <option value="business">Business Website</option>
                           <option value="redesign">Redesign</option>
                           <option value="consultation">Consultation</option>
                         </select>
                         <span className="absolute right-0 top-1.5 pointer-events-none text-neutral-500 text-xs">&darr;</span>
+                        {formErrors.projectType && (
+                          <span className="text-[10px] font-mono text-red-500 uppercase tracking-wider mt-1 block">{formErrors.projectType}</span>
+                        )}
+                      </div>
+                      {/* Brief about project (optional) */}
+                      <div className="relative">
+                        <textarea
+                          id="contact-brief"
+                          name="brief"
+                          value={formData.brief}
+                          onChange={handleFormChange}
+                          placeholder="BRIEF ABOUT YOUR PROJECT (OPTIONAL)"
+                          rows={3}
+                          className="w-full bg-transparent border-b border-black/30 pb-2 text-xs font-mono uppercase tracking-wider text-black placeholder-neutral-400 focus:outline-none focus:border-black transition-colors resize-none"
+                        />
                       </div>
 
+                      {/* Error banner */}
+                      {formStatus === "error" && (
+                        <p className="text-[10px] font-mono text-red-500 uppercase tracking-wider">
+                          Something went wrong. Please try again or email me directly.
+                        </p>
+                      )}
+
                       {/* Submit */}
-                      <div className="pt-2">
+                      <div className="pt-2 flex items-center gap-4">
                         <button
+                          id="contact-submit"
                           type="submit"
-                          className="px-6 py-2.5 border border-black bg-[#F5F4F0] text-black font-syne font-bold uppercase tracking-wider text-xs transition-colors duration-300 hover:bg-neutral-300 cursor-pointer"
+                          disabled={formStatus === "submitting"}
+                          className="px-6 py-2.5 border border-black bg-[#F5F4F0] text-black font-syne font-bold uppercase tracking-wider text-xs transition-colors duration-300 hover:bg-neutral-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          SUBMIT
+                          {formStatus === "submitting" ? "SENDING..." : "SUBMIT"}
                         </button>
+                        <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider">* Required</span>
                       </div>
                     </form>
+                    )}
                   </div>
 
                 </div>

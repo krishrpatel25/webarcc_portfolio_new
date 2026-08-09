@@ -284,7 +284,7 @@ export default function App() {
                   height: `${100 / ROWS}%`,
                   backgroundColor: "#F5F4F0",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: pixelsVanishing ? `opacity 0s step-end ${delay}ms` : "none",
+                  transition: `opacity 0.8s ease ${delay}ms`,
                 }}
               />
             );

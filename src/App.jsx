@@ -14,6 +14,18 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
+  const [showPixelIntro, setShowPixelIntro] = useState(() => {
+    // Check if session storage flag exists
+    if (typeof window !== "undefined") {
+      const hasLoaded = sessionStorage.getItem("hasLoadedPortfolio");
+      return !hasLoaded;
+    }
+    return true;
+  });
+  const [pixelsVanishing, setPixelsVanishing] = useState(false);
+  const [textFading, setTextFading] = useState(false);
+  const [loadingNum, setLoadingNum] = useState(0);
+
   // Pixel intro animation dynamic grids
   const [gridSize, setGridSize] = useState(() => {
     // SSR safe default (desktop size)
@@ -34,18 +46,6 @@ export default function App() {
 
   const COLS = gridSize.cols;
   const ROWS = gridSize.rows;
-
-  const [showPixelIntro, setShowPixelIntro] = useState(() => {
-    // Check if session storage flag exists
-    if (typeof window !== "undefined") {
-      const hasLoaded = sessionStorage.getItem("hasLoadedPortfolio");
-      return !hasLoaded;
-    }
-    return true;
-  });
-  const [pixelsVanishing, setPixelsVanishing] = useState(false);
-  const [textFading, setTextFading] = useState(false);
-  const [loadingNum, setLoadingNum] = useState(0);
 
   useEffect(() => {
     if (!showPixelIntro) return;

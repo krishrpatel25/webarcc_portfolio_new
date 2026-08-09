@@ -283,10 +283,13 @@ export default function App() {
                   width: `${100 / COLS}%`,
                   height: `${100 / ROWS}%`,
                   backgroundColor: "#F5F4F0",
-                  border: "1px solid #000",
                   boxSizing: "border-box",
+                  borderRight: "1px solid #000",
+                  borderBottom: "1px solid #000",
+                  borderLeft: col === 0 ? "1px solid #000" : "none",
+                  borderTop: row === 0 ? "1px solid #000" : "none",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: `opacity 0.7s ease ${delay}ms`,
+                  transition: pixelsVanishing ? `opacity 0s step-end ${delay}ms` : "none",
                 }}
               />
             );

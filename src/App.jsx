@@ -14,65 +14,7 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
-  const [showPixelIntro, setShowPixelIntro] = useState(() => {
-    // Check if session storage flag exists
-    if (typeof window !== "undefined") {
-      const hasLoaded = sessionStorage.getItem("hasLoadedPortfolio");
-      return !hasLoaded;
-    }
-    return true;
-  });
-  const [pixelsVanishing, setPixelsVanishing] = useState(false);
-  const [textFading, setTextFading] = useState(false);
-  const [loadingNum, setLoadingNum] = useState(0);
 
-  // Pixel intro animation dynamic grids
-  const [gridSize, setGridSize] = useState(() => {
-    // SSR safe default (desktop size)
-    return { cols: 8, rows: 5 };
-  });
-  const [pixelDelays, setPixelDelays] = useState([]);
-
-  useEffect(() => {
-    if (!showPixelIntro) return;
-    const isMobile = window.innerWidth < 768;
-    const cols = isMobile ? 4 : 8;
-    // Calculate rows to make height match width of columns perfectly
-    const cellWidth = window.innerWidth / cols;
-    const rows = Math.ceil(window.innerHeight / cellWidth);
-    setGridSize({ cols, rows });
-    setPixelDelays(
-      Array.from({ length: cols * rows }, () => Math.floor(Math.random() * 2800))
-    );
-  }, [showPixelIntro]);
-
-  const COLS = gridSize.cols;
-  const ROWS = gridSize.rows;
-
-  useEffect(() => {
-    if (!showPixelIntro) return;
-
-    // Set flag so it won't show again in this session
-    sessionStorage.setItem("hasLoadedPortfolio", "true");
-
-    // Count 0 → 100 over 1200ms
-    let count = 0;
-    const counter = setInterval(() => {
-      count += 1;
-      setLoadingNum(count);
-      if (count >= 100) {
-        clearInterval(counter);
-        // Start fading text immediately once 100% is reached
-        setTextFading(true);
-      }
-    }, 12);
-
-    // Start pixel vanish animation 500ms after text fade starts (1200ms loading + 500ms fade buffer = 1700ms)
-    const t1 = setTimeout(() => setPixelsVanishing(true), 1700);
-    // Remove overlay from DOM once all pixels have finished fading slowly (1700ms start + 2800ms max delay + 700ms transition = 5200ms)
-    const t2 = setTimeout(() => setShowPixelIntro(false), 5300);
-    return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
-  }, [showPixelIntro]);
 
   // Typewriter animation
   const roles = [
@@ -302,91 +244,7 @@ export default function App() {
   }, []);
   return (
     <>
-      {/* ================= PIXEL INTRO OVERLAY ================= */}
-      {showPixelIntro && (
-        <div
-          className="fixed inset-0 z-[99999] grid"
-          style={{
-            pointerEvents: "none",
-            gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-            gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-          }}
-        >
-          {/* Pixel grid */}
-          {pixelDelays.map((delay, i) => {
-            return (
-              <div
-                key={i}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#F5F4F0",
-                  opacity: pixelsVanishing ? 0 : 1,
-                  transition: `opacity 0.7s ease ${delay}ms`,
-                }}
-              />
-            );
-          })}
-          {/* Loading number */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "8%",
-              right: "6%",
-              fontFamily: "'Syne', monospace",
-              fontSize: "clamp(4rem, 10vw, 8rem)",
-              fontWeight: "800",
-              color: "#000",
-              lineHeight: 1,
-              letterSpacing: "-0.04em",
-              opacity: textFading ? 0 : 1,
-              transition: "opacity 0.4s ease",
-              userSelect: "none",
-            }}
-          >
-            {String(loadingNum).padStart(2, "0")}
-            <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.4 }}>%</span>
-          </div>
-          {/* Loading label */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "8%",
-              left: "6%",
-              fontFamily: "monospace",
-              fontSize: "0.65rem",
-              fontWeight: "700",
-              color: "#000",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              opacity: textFading ? 0 : 0.4,
-              transition: "opacity 0.4s ease",
-              userSelect: "none",
-            }}
-          >
-            Loading Portfolio
-          </div>
-          {/* Top-left brand logo matching navbar */}
-          <div
-            style={{
-              position: "absolute",
-              top: "24px",
-              left: "24px",
-              fontFamily: "'Syne', sans-serif",
-              fontSize: "1.5rem",
-              fontWeight: "700",
-              color: "#000",
-              letterSpacing: "-0.02em",
-              textTransform: "lowercase",
-              opacity: textFading ? 0 : 1,
-              transition: "opacity 0.4s ease",
-              userSelect: "none",
-            }}
-          >
-            web aarc<span style={{ color: "#a3a3a3" }}>.</span>
-          </div>
-        </div>
-      )}
+
       {/* Scroll Progress Indicator */}
       <div
         id="progress"

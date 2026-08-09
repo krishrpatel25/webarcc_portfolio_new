@@ -14,6 +14,21 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
+  // Looping role animation
+  const roles = ["Web Developer", "UI/UX Designer", "Freelancer", "Full-Stack Dev", "Problem Solver"];
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [roleFading, setRoleFading] = useState(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleFading(true);
+      setTimeout(() => {
+        setRoleIndex((prev) => (prev + 1) % roles.length);
+        setRoleFading(false);
+      }, 400);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   // Contact form state
   const [formData, setFormData] = useState({ name: "", email: "", mobile: "", projectType: "", brief: "" });
   const [formErrors, setFormErrors] = useState({});
@@ -425,7 +440,27 @@ export default function App() {
                 <div>
                   <p className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold text-black leading-tight">
                     Krish Patel,
-                    <br />Web Developer
+                  </p>
+                  {/* Animated looping role */}
+                  <div className="mt-1 h-9 overflow-hidden flex items-center">
+                    <span
+                      className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold leading-tight inline-block transition-all duration-400"
+                      style={{
+                        opacity: roleFading ? 0 : 1,
+                        transform: roleFading ? "translateY(10px)" : "translateY(0px)",
+                        transition: "opacity 0.4s ease, transform 0.4s ease",
+                        background: "linear-gradient(90deg, #000 0%, #555 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      {roles[roleIndex]}
+                    </span>
+                  </div>
+                  {/* Subheading */}
+                  <p className="mt-3 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                    Based in Ahmedabad &nbsp;&middot;&nbsp; Available Worldwide
                   </p>
                 </div>
                 <div className="mt-8 pt-6 border-t border-neutral-300">

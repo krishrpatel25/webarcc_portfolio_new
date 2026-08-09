@@ -268,7 +268,7 @@ export default function App() {
     <>
       {/* ================= PIXEL INTRO OVERLAY ================= */}
       {showPixelIntro && (
-        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none", backgroundColor: "#F5F4F0" }}>
+        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none" }}>
           {/* Pixel grid */}
           {pixelDelays.map((delay, i) => {
             const col = i % COLS;

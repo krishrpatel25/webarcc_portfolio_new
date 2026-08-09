@@ -14,20 +14,48 @@ export default function App() {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
 
-  // Looping role animation
-  const roles = ["Web Developer", "UI/UX Designer", "Freelancer", "Full-Stack Dev", "Problem Solver"];
+  // Typewriter animation
+  const roles = [
+    "Web Developer",
+    "UI/UX Designer",
+    "Freelancer",
+    "Full-Stack Engineer",
+    "Code Craftsman",
+    "Digital Architect",
+    "Pixel Perfectionist",
+    "Problem Solver",
+  ];
+  const [typedText, setTypedText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
-  const [roleFading, setRoleFading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRoleFading(true);
-      setTimeout(() => {
-        setRoleIndex((prev) => (prev + 1) % roles.length);
-        setRoleFading(false);
-      }, 400);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
+    const currentRole = roles[roleIndex];
+    if (isPaused) {
+      const pause = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, 1600);
+      return () => clearTimeout(pause);
+    }
+    const speed = isDeleting ? 45 : 90;
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        const next = currentRole.slice(0, typedText.length + 1);
+        setTypedText(next);
+        if (next === currentRole) setIsPaused(true);
+      } else {
+        const next = currentRole.slice(0, typedText.length - 1);
+        setTypedText(next);
+        if (next === "") {
+          setIsDeleting(false);
+          setRoleIndex((prev) => (prev + 1) % roles.length);
+        }
+      }
+    }, speed);
+    return () => clearTimeout(timeout);
+  }, [typedText, isDeleting, isPaused, roleIndex]);
 
   // Contact form state
   const [formData, setFormData] = useState({ name: "", email: "", mobile: "", projectType: "", brief: "" });
@@ -441,18 +469,16 @@ export default function App() {
                   <p className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold text-black leading-tight">
                     Krish Patel,
                   </p>
-                  {/* Animated looping role */}
-                  <div className="mt-1 h-9 overflow-hidden flex items-center">
-                    <span
-                      className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold leading-tight inline-block transition-all duration-400"
-                      style={{
-                        opacity: roleFading ? 0 : 1,
-                        transform: roleFading ? "translateY(10px)" : "translateY(0px)",
-                        transition: "opacity 0.4s ease, transform 0.4s ease",
-                      }}
-                    >
-                      {roles[roleIndex]}
+                  {/* Typewriter animated role */}
+                  <div className="mt-1 h-9 flex items-center">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-syne font-bold text-black leading-tight">
+                      {typedText}
                     </span>
+                    {/* Blinking cursor */}
+                    <span
+                      className="inline-block w-[2px] h-6 sm:h-7 lg:h-8 bg-black ml-[2px] align-middle"
+                      style={{ animation: "blink 0.75s step-end infinite" }}
+                    />
                   </div>
                   {/* Subheading */}
                   <p className="mt-3 text-xs font-mono text-neutral-500 uppercase tracking-widest">

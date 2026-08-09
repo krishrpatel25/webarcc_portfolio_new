@@ -17,15 +17,10 @@ export default function App() {
   // Typewriter animation
   const roles = [
     "Full-Stack Developer",
-    "Open To Full-Time Roles",
     "UI/UX Designer",
-    "Available For Freelance",
-    "React & Next.js Dev",
-    "Seeking SDE Roles",
-    "Frontend Specialist",
-    "Open For Projects",
     "Design Engineer",
-    "Hire Me Today",
+    "Frontend Specialist",
+    "React & Next.js Dev",
   ];
   const [typedText, setTypedText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
@@ -481,6 +476,13 @@ export default function App() {
                       className="inline-block w-[2px] h-6 sm:h-7 lg:h-8 bg-black ml-[2px] align-middle"
                       style={{ animation: "blink 0.75s step-end infinite" }}
                     />
+                  </div>
+                  {/* Availability badge */}
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 border border-black/20 bg-black/5 text-[10px] font-mono font-bold uppercase tracking-widest text-black">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" style={{ animation: "blink 1.5s step-end infinite" }} />
+                      Available For Freelance
+                    </span>
                   </div>
                   {/* Subheading */}
                   <p className="mt-3 text-xs font-mono text-neutral-500 uppercase tracking-widest">

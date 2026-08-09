@@ -18,7 +18,7 @@ export default function App() {
   const COLS = 8;
   const ROWS = 5;
   const [pixelDelays] = useState(() =>
-    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 1400))
+    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 2800))
   );
   const [showPixelIntro, setShowPixelIntro] = useState(() => {
     // Check if session storage flag exists
@@ -52,8 +52,8 @@ export default function App() {
 
     // Start pixel vanish animation 500ms after text fade starts (1200ms loading + 500ms fade buffer = 1700ms)
     const t1 = setTimeout(() => setPixelsVanishing(true), 1700);
-    // Remove overlay from DOM once all pixels have finished fading slowly (1700ms start + 1400ms max delay + 1600ms transition = 4700ms)
-    const t2 = setTimeout(() => setShowPixelIntro(false), 4800);
+    // Remove overlay from DOM once all pixels have finished fading slowly (1700ms start + 2800ms max delay + 700ms transition = 5200ms)
+    const t2 = setTimeout(() => setShowPixelIntro(false), 5300);
     return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
   }, [showPixelIntro]);
 
@@ -303,7 +303,7 @@ export default function App() {
                   height: `${100 / ROWS}%`,
                   backgroundColor: "#F5F4F0",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: `opacity 1.6s ease ${delay}ms`,
+                  transition: `opacity 0.7s ease ${delay}ms`,
                 }}
               />
             );

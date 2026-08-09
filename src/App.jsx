@@ -16,14 +16,16 @@ export default function App() {
 
   // Typewriter animation
   const roles = [
-    "Web Developer",
+    "Full-Stack Developer",
+    "Open To Full-Time Roles",
     "UI/UX Designer",
-    "Freelancer",
-    "Full-Stack Engineer",
-    "Code Craftsman",
-    "Digital Architect",
-    "Pixel Perfectionist",
-    "Problem Solver",
+    "Available For Freelance",
+    "React & Next.js Dev",
+    "Seeking SDE Roles",
+    "Frontend Specialist",
+    "Open For Projects",
+    "Design Engineer",
+    "Hire Me Today",
   ];
   const [typedText, setTypedText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);

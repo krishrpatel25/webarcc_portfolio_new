@@ -18,14 +18,24 @@ export default function App() {
   const COLS = 12;
   const ROWS = 8;
   const [pixelDelays] = useState(() =>
-    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 1000))
+    Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 900))
   );
   const [showPixelIntro, setShowPixelIntro] = useState(true);
   const [pixelsVanishing, setPixelsVanishing] = useState(false);
+  const [loadingNum, setLoadingNum] = useState(0);
   useEffect(() => {
-    const t1 = setTimeout(() => setPixelsVanishing(true), 250);
-    const t2 = setTimeout(() => setShowPixelIntro(false), 1800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    // Count 0 → 100 over 1200ms
+    let count = 0;
+    const counter = setInterval(() => {
+      count += 1;
+      setLoadingNum(count);
+      if (count >= 100) clearInterval(counter);
+    }, 12);
+    // Start vanishing after counter finishes
+    const t1 = setTimeout(() => setPixelsVanishing(true), 1350);
+    // Remove from DOM after all vanish
+    const t2 = setTimeout(() => setShowPixelIntro(false), 2500);
+    return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   // Typewriter animation
@@ -258,7 +268,8 @@ export default function App() {
     <>
       {/* ================= PIXEL INTRO OVERLAY ================= */}
       {showPixelIntro && (
-        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none" }}>
+        <div className="fixed inset-0 z-[99999]" style={{ pointerEvents: "none", backgroundColor: "#F5F4F0" }}>
+          {/* Pixel grid */}
           {pixelDelays.map((delay, i) => {
             const col = i % COLS;
             const row = Math.floor(i / COLS);
@@ -271,15 +282,56 @@ export default function App() {
                   top: `${(row / ROWS) * 100}%`,
                   width: `${100 / COLS}%`,
                   height: `${100 / ROWS}%`,
-                  backgroundColor: "#0d0d0d",
+                  backgroundColor: "#F5F4F0",
+                  border: "1px solid #000",
+                  boxSizing: "border-box",
                   transform: pixelsVanishing ? "scale(0)" : "scale(1)",
                   opacity: pixelsVanishing ? 0 : 1,
-                  transition: `transform 0.55s cubic-bezier(0.4,0,0.2,1) ${delay}ms, opacity 0.55s ease ${delay}ms`,
+                  transition: `transform 0.6s cubic-bezier(0.4,0,0.2,1) ${delay}ms, opacity 0.6s ease ${delay}ms`,
                   transformOrigin: "center",
                 }}
               />
             );
           })}
+          {/* Loading number */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "8%",
+              right: "6%",
+              fontFamily: "'Syne', monospace",
+              fontSize: "clamp(4rem, 10vw, 8rem)",
+              fontWeight: "800",
+              color: "#000",
+              lineHeight: 1,
+              letterSpacing: "-0.04em",
+              opacity: pixelsVanishing ? 0 : 1,
+              transition: "opacity 0.4s ease",
+              userSelect: "none",
+            }}
+          >
+            {String(loadingNum).padStart(2, "0")}
+            <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.4 }}>%</span>
+          </div>
+          {/* Loading label */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "8%",
+              left: "6%",
+              fontFamily: "monospace",
+              fontSize: "0.65rem",
+              fontWeight: "700",
+              color: "#000",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              opacity: pixelsVanishing ? 0 : 0.4,
+              transition: "opacity 0.4s ease",
+              userSelect: "none",
+            }}
+          >
+            Loading Portfolio
+          </div>
         </div>
       )}
       {/* Scroll Progress Indicator */}

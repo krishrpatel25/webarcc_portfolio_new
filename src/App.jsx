@@ -29,6 +29,7 @@ export default function App() {
     return true;
   });
   const [pixelsVanishing, setPixelsVanishing] = useState(false);
+  const [textFading, setTextFading] = useState(false);
   const [loadingNum, setLoadingNum] = useState(0);
 
   useEffect(() => {
@@ -42,12 +43,17 @@ export default function App() {
     const counter = setInterval(() => {
       count += 1;
       setLoadingNum(count);
-      if (count >= 100) clearInterval(counter);
+      if (count >= 100) {
+        clearInterval(counter);
+        // Start fading text immediately once 100% is reached
+        setTextFading(true);
+      }
     }, 12);
-    // Start vanishing only after the loading reaches 100% (takes 1200ms + 150ms buffer = 1350ms)
-    const t1 = setTimeout(() => setPixelsVanishing(true), 1350);
-    // Remove overlay from DOM once all pixels have finished fading slowly (1350ms start + 1400ms max delay + 1600ms transition = 4350ms)
-    const t2 = setTimeout(() => setShowPixelIntro(false), 4400);
+
+    // Start pixel vanish animation 500ms after text fade starts (1200ms loading + 500ms fade buffer = 1700ms)
+    const t1 = setTimeout(() => setPixelsVanishing(true), 1700);
+    // Remove overlay from DOM once all pixels have finished fading slowly (1700ms start + 1400ms max delay + 1600ms transition = 4700ms)
+    const t2 = setTimeout(() => setShowPixelIntro(false), 4800);
     return () => { clearInterval(counter); clearTimeout(t1); clearTimeout(t2); };
   }, [showPixelIntro]);
 
@@ -314,7 +320,7 @@ export default function App() {
               color: "#000",
               lineHeight: 1,
               letterSpacing: "-0.04em",
-              opacity: pixelsVanishing ? 0 : 1,
+              opacity: textFading ? 0 : 1,
               transition: "opacity 0.4s ease",
               userSelect: "none",
             }}
@@ -334,7 +340,7 @@ export default function App() {
               color: "#000",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              opacity: pixelsVanishing ? 0 : 0.4,
+              opacity: textFading ? 0 : 0.4,
               transition: "opacity 0.4s ease",
               userSelect: "none",
             }}
@@ -353,7 +359,7 @@ export default function App() {
               color: "#000",
               letterSpacing: "-0.02em",
               textTransform: "lowercase",
-              opacity: pixelsVanishing ? 0 : 1,
+              opacity: textFading ? 0 : 1,
               transition: "opacity 0.4s ease",
               userSelect: "none",
             }}

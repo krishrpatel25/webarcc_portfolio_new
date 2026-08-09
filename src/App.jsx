@@ -15,9 +15,9 @@ export default function App() {
   const [openFaqId, setOpenFaqId] = useState(null);
 
   const [showPixelIntro, setShowPixelIntro] = useState(() => {
-    // Check if session storage flag exists
+    // Check if local storage flag exists
     if (typeof window !== "undefined") {
-      const hasLoaded = sessionStorage.getItem("hasLoadedPortfolio");
+      const hasLoaded = localStorage.getItem("hasLoadedPortfolio");
       return !hasLoaded;
     }
     return true;
@@ -51,7 +51,7 @@ export default function App() {
     if (!showPixelIntro) return;
 
     // Set flag so it won't show again in this session
-    sessionStorage.setItem("hasLoadedPortfolio", "true");
+    localStorage.setItem("hasLoadedPortfolio", "true");
 
     // Count 0 → 100 over 1200ms
     let count = 0;

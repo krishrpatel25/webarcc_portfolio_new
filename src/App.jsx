@@ -15,8 +15,8 @@ export default function App() {
   const [openFaqId, setOpenFaqId] = useState(null);
 
   // Pixel intro animation
-  const COLS = 12;
-  const ROWS = 8;
+  const COLS = 8;
+  const ROWS = 5;
   const [pixelDelays] = useState(() =>
     Array.from({ length: COLS * ROWS }, () => Math.floor(Math.random() * 900))
   );
@@ -283,11 +283,6 @@ export default function App() {
                   width: `${100 / COLS}%`,
                   height: `${100 / ROWS}%`,
                   backgroundColor: "#F5F4F0",
-                  boxSizing: "border-box",
-                  borderRight: "1px solid #000",
-                  borderBottom: "1px solid #000",
-                  borderLeft: col === 0 ? "1px solid #000" : "none",
-                  borderTop: row === 0 ? "1px solid #000" : "none",
                   opacity: pixelsVanishing ? 0 : 1,
                   transition: pixelsVanishing ? `opacity 0s step-end ${delay}ms` : "none",
                 }}
